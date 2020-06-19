@@ -1,0 +1,28 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./dist/server.js",
+    "dev": "nodemon ./dist/server.js",
+    "build": "tsc",
+    "script": "cd scripts && ts-node",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.6",
+    "@types/mongoose": "^5.7.22",
+    "@types/nodemon": "^1.19.0",
+    "@types/socket.io": "^2.1.8",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.18",
+    "nodemon": "^2.0.4",
+    "socket.io": "^2.3.0",
+    "ts-node": "^8.10.2"
+  }
+}
