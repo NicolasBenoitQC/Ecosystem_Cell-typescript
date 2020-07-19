@@ -5,9 +5,10 @@ import socketio from 'socket.io';
 import { 
     getStemCellByMindMap, getCellsByStemCell, getCellById,
     createDefaultStemCell, createFirstCell,
-    addCellInThisPosition, deleteCellById
+    addCellInThisPosition, deleteCellById,
+    updatePropsCellById,
          } from './database/cells/cells.methods';
-import { ICell, IGetCellsByStemCellResp, IGetStemCellResp } from './database/cells/cells.types';
+import { ICell} from './database/cells/cells.types';
 import { CellModel } from './database/cells/cells.model';
 
 
@@ -93,10 +94,10 @@ io.on('connection', async (socket) => {
     );
 
     socket.on('update props cell', 
-        async (idCell: string, cellUpdated:ICell) => {
-            await CellModel.findOneAndUpdate({_id: idCell}, cellUpdated)
-                .then(() => console.log('cell updated!'))
-                .catch(error => console.log('Error update cell : ' + error)) 
+        async (idCell: string, cellUpdated:ICell, fn) => {
+            const updatePropsCell = await updatePropsCellById(idCell, cellUpdated);
+            fn(updatePropsCell);
+            console.log(updatePropsCell);
         
             socket.broadcast.emit('cell has updated', 
                 'one cell has updated!')

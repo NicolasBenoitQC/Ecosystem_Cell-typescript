@@ -45,6 +45,13 @@ export interface INewCell {
     cellCreated?: ICell;
 };
 
+export interface IUpdatePropsCellResp {
+    "request type": string;
+    error:boolean;
+    message?: string;
+    cellCreated?: ICell;
+};
+
  export interface ICellDocument extends ICellSchema ,Document {
 }; 
 

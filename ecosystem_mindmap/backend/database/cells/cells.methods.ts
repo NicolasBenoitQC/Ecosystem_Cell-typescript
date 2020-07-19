@@ -1,6 +1,7 @@
 import { CellModel } from './cells.model';
-import { IGetStemCellResp, IGetCellsByStemCellResp, IGetCellByIdResp, 
-        INewCell,
+import { ICell,
+        IGetStemCellResp, IGetCellsByStemCellResp, IGetCellByIdResp, 
+        INewCell, IUpdatePropsCellResp, 
      } from './cells.types';
 
 /* ------------------------------------------------------------
@@ -141,3 +142,18 @@ export async function deleteCellById (cell_id: string, stemCell_id: string): Pro
 
     return cellToBeDelete;
 };
+
+export async function updatePropsCellById (Cell_id: string, cellUpdated:ICell): Promise<IUpdatePropsCellResp> {
+    const requestType = 'update props cell';
+
+    const updateCell = await CellModel.findOneAndUpdate({_id: Cell_id}, cellUpdated)
+        .then(cellsRequest => {return {'request type': requestType,
+                                        'error': false,
+                                        'cells': cellsRequest
+                                        }})
+        .catch(error => {return {'request type': requestType,
+                                    'error': true, 
+                                    'message': error}})
+
+    return updateCell;
+}
