@@ -1,14 +1,20 @@
+
+
 type Cell = {
-    _id: number
+    _id: string;
     title: string;
     description: string;
-    positionId:  number;
+    position: number;
+    idStemCell: string;
+    stemCell: boolean;
 };
 type StemCell = {
-    _id: number
+    _id: string;
     title: string;
     description: string;
-    positionId:  number;
+    position: number;
+    idStemCell: string;
+    stemCell: boolean;
 };
 
 type QuantityCells = number;
@@ -18,3 +24,8 @@ type PositionId = number;
 type Localhost = string;
 type title = string;
 type _id = string;
+type WidtSvgViewBox = number;
+type HeightSvgViewBox = number;
+type OriginX = number;
+type OriginY = number;
+type ActionDoubleClick = any

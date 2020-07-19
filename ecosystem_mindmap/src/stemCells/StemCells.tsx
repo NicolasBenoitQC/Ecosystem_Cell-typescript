@@ -1,22 +1,21 @@
 import './StemCells.css';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { OriginX, OriginY, WidthSvgViewBox } from '../svg-setting';
 
 interface StemCellsProps {
     stemCell: StemCell
-    widthViewBox: number;
-    heightViewBox: number;
 };
 
-export const StemCells: React.FC<StemCellsProps> = ({stemCell, widthViewBox, heightViewBox}) => {
+export const StemCells: React.FC<StemCellsProps> = ({stemCell}) => {
 
 /* -------------------------------------------------------------------------------------------------
 ----- setting paramter of Stem Cells ( SVG, foreignObject )----------------------------------------------     
 ---------------------------------------------------------------------------------------------------- */
-    const originX = widthViewBox / 2;
-    const originY = heightViewBox / 2;
-    const stemCellRadius = originX / 4;
-    const radiusAxisRotation = originX / 2;
+    const originX = OriginX;
+    const originY = OriginY;
+    const stemCellRadius = (WidthSvgViewBox/2) / 4;
+    const radiusAxisRotation = (WidthSvgViewBox/2) / 2;
     const pathEditingCell = `/edit/${stemCell._id}`;
 
     useEffect(() => {

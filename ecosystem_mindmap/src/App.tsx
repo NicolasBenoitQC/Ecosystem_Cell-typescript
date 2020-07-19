@@ -9,7 +9,7 @@ const  App: React.FC = () => {
     <Router>
       <div className='container' >
         <Route path='/' exact component={MindMapBuilder} />
-        <Route path='/edit/:id' component={EditingCells} />
+        <Route path='/edit/:id_cell/:id_stemCell' component={EditingCells} />
       </div>
     </Router>
   );

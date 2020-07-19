@@ -52,3 +52,7 @@
     color: black;
 }
 
+.cellsLayer:hover {
+    cursor:pointer;
+}
+

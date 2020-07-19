@@ -1,26 +1,45 @@
 import * as Mongoose from 'mongoose';
-import { findAllCells, findCellBy_id, findStemCell,updateCell,findByStemCell } from './cells.statics';
-import { sametitle, getTitleByIdPosition } from './cells.methods';
 
 const CellSchema = new Mongoose.Schema({
-    title: { type: String, required: true },
-    description: { type: String },
-    positionId: { type: Number, required: true },
-    titleOfMindMap: { type: String, required: true },
-    titleStemCell: { type: String, required: true },
-    stemCell: { type: Boolean, required: true }
+        title: { type: String, required: true },
+        description: { type: String },
+        position: { type: Number, required: true },
+        idStemCell: { type: String, required: true },
+        stemCell: { type: Boolean, required: true }
 }, {timestamps: true});
 
+export default CellSchema;
 
-// Static methodes.
-CellSchema.statics.findAllCells = findAllCells;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* JMA ca ne fonctionne plus en utilisant juste le typage et comment gerer required.
+
+const CellSchema = new Mongoose.Schema(ICell, {timestamps: true});
+
+*/
+
+
+//import { findAllCells, findCellBy_id, findStemCell,updateCell,findByStemCell } from './cells.statics';
+
+// Static methodes   JMA c'est quoi methodes static    ?????????.
+/* CellSchema.statics.findAllCells = findAllCells;
 CellSchema.statics.findCellBy_id = findCellBy_id;
 CellSchema.statics.findStemCell = findStemCell;
 CellSchema.statics.updateCell = updateCell;
-CellSchema.statics.findByStemCell = findByStemCell;
-
-// Instance methodes.
-CellSchema.methods.sametitle = sametitle;
-CellSchema.methods.getTitleByIdPosition = getTitleByIdPosition;
-
-export default CellSchema;
+CellSchema.statics.findByStemCell = findByStemCell; */

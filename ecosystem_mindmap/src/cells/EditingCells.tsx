@@ -29,11 +29,12 @@ export const EditingCells: React.FC = () => {
     const [cell, setCell] = useState<Cell | any>({}); // JMA why any
 
     const url = window.location.pathname;
-    const _id = url.substring(url.lastIndexOf('/') + 1);
+    const _idCell = url.substring(url.lastIndexOf("id_cell:") + 8, url.lastIndexOf("/"));
+    const _idStemCell = url.substring(url.lastIndexOf("id_stemCell:") + 12);
     
     useEffect(() => {
-        getCell(_id);
-    },[_id]);
+        getCell(_idCell);
+    },[_idCell]);
 
     const getCell = (idCell: any) => {
         const socket = io.connect(ENDPOINT);
@@ -47,7 +48,7 @@ export const EditingCells: React.FC = () => {
         setCell({
             title: event.target.value,
             description: cell.description,
-            positionId: cell.positionId,
+            position: cell.position,
         });
     };
 
@@ -64,7 +65,7 @@ export const EditingCells: React.FC = () => {
         const updateCircle = cell 
 
         const socket = io.connect(ENDPOINT);
-        socket.emit('update props cell', _id, updateCircle, (data:any) => {
+        socket.emit('update props cell', _idCell, updateCircle, (data:any) => {
             console.log(data);
         });
 
@@ -79,7 +80,7 @@ export const EditingCells: React.FC = () => {
     const deleteCell = (event:any) => {
         event.preventDefault();
         const socket = io.connect(ENDPOINT);
-        socket.emit('delete cell by id', _id, (data:any) => {
+        socket.emit('delete cell by id', _idCell, _idStemCell, (data:any) => {
             console.log(data);
         })
         setTimeout(function() {window.location.href = '/'}, 500);

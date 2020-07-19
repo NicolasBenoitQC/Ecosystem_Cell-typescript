@@ -4,6 +4,8 @@
 ecosystem_mindmap/backend/node_modules
 ecosystem_mindmap/backend/dist
 ecosystem_mindmap/node_modules
+ecosystem_mindmap/.history
+
 /.pnp
 .pnp.js
 

@@ -8,7 +8,7 @@
     "dev": "nodemon ./dist/server.js",
     "build": "tsc",
     "script": "cd scripts && ts-node",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./dist/test/*.test.js"
   },
   "author": "",
   "license": "ISC",

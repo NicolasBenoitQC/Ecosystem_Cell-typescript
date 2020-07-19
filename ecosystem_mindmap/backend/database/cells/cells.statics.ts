@@ -1,4 +1,4 @@
-import { ICellDocument, ICellModel, ICell } from './cells.types';
+/* import { ICellDocument, ICellModel, ICell } from './cells.types';
 import { CellModel } from './cells.model';
 
 export async function findAllCells (
@@ -55,7 +55,7 @@ export async function findByStemCell (
 export async function getAllCells () {
     const cells = await CellModel.find({stemCell: false})
 
-    /* need to understand callback
+    /* need to understand callback JMA 
     
     const cells = await CellModel.find({stemCell: false}, function (error, cells) {
         if (error) return handleError(error);
@@ -65,7 +65,7 @@ export async function getAllCells () {
     or this methode
     .then(cells => {console.log(cells);})
     .catch(error => console.log('Error to get all cells : ' + error))
-    */
+    
     return cells
 }
 
@@ -116,3 +116,4 @@ export async function addCellInThisPosition (positionIdOfNewCell: number) {
     await newCell.save()
 
 };
+ */

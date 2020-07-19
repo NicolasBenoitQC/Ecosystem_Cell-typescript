@@ -2,8 +2,13 @@ import express from 'express';
 import { Connect } from './database/database';
 import http from 'http';
 import socketio from 'socket.io';
+import { 
+    getStemCellByMindMap, getCellsByStemCell,
+    createDefaultStemCell, createFirstCell,
+    addCellInThisPosition, deleteCellById
+         } from './database/cells/cells.methods';
+import { ICell } from './database/cells/cells.types';
 import { CellModel } from './database/cells/cells.model';
-import { getAllCells, deleteCellById, addCellInThisPosition } from './database/cells/cells.methods';
 
 
 const app = express();
@@ -24,21 +29,41 @@ io.on('connection', async (socket) => {
     socket.on('user join the mind map', async (name, fn) => {
         await fn(`welcome ${name} to the mindmap`);  
         socket.broadcast.emit('broadcast the user join the mindmap', 
-        `new user has join the mindmap`);
+        `new user ${name} has join the mindmap`);
     });
 
-    socket.on('get all cells', async (fn) => {     
-        const cells = await getAllCells();  
+    socket.on('get stem cell by mind map', async (stemCellId, fn) => {     
+        const stemCell = await getStemCellByMindMap(stemCellId);
+        await fn(stemCell);
+        //console.log(stemCell);
+    });
+
+    socket.on('get cells by stem cell', async (stemCell, fn) => {     
+        const cells = await getCellsByStemCell(stemCell);  
         await fn(cells);
+        //console.log(cells);
     });
 
-    socket.on('get stem cell', async (fn) => {
-        await CellModel.find({stemCell: true})
-        .then(async stemCell => await fn(stemCell))
-        .catch(error => console.log('Error request get stem cell : ' + error))
-
-        console.log('stem cell obtained')
+    socket.on('create default stem cell', async (stemCellId, fn) => {     
+        const defaultStemCell = await createDefaultStemCell(stemCellId);  
+        await fn(defaultStemCell);
+        //console.log(defaultStemCell);
     });
+
+    socket.on('create first cell of the stem cell', async (stemCellReferent: ICell[], fn) => {
+        const newCell = await createFirstCell (stemCellReferent);
+        await fn(newCell);
+        socket.broadcast.emit('first cell of the mindmap created', 'return first cell');
+        console.log(newCell);
+    });
+
+    socket.on('add cell in this position', 
+        async (positionOfNewCell:number, stemCellReferent: ICell[], fn) => {
+            const newCell = await addCellInThisPosition(positionOfNewCell, stemCellReferent);
+            socket.broadcast.emit('cell added to a specific position', await fn(newCell));
+            console.log(newCell)
+        }
+    );
 
     socket.on('get cell by _id', async (idCell, fn) => {
         await CellModel.find({_id: idCell})
@@ -47,7 +72,7 @@ io.on('connection', async (socket) => {
         
         console.log('cell obtained by ID')
     });
-    
+
     socket.on('update props cell', async (idCell, cellUpdated) => {
         await CellModel.findOneAndUpdate({_id: idCell}, cellUpdated)
         .then(() => console.log('cell updated!'))
@@ -56,17 +81,30 @@ io.on('connection', async (socket) => {
         socket.broadcast.emit('cell has updated', 'one cell has updated!')
     });
 
-    socket.on('delete cell by id', async (cell_id) => {
-        await deleteCellById(cell_id)
-        socket.broadcast.emit('cell deleted by id', 'cell deleted!');
-        console.log('cell deleted!');
+    socket.on('delete cell by id', async (cell_id, stemCell_id) => {
+        await deleteCellById(cell_id, stemCell_id)
+        socket.broadcast.emit('cell deleted by id', `cell ${cell_id} deleted!`);
+        console.log(`cell ${cell_id} deleted!`);
     });
 
-    socket.on('add cell in this position', async (positionIdOfNewCell:any, fn) => {
-        await addCellInThisPosition(positionIdOfNewCell);
-        socket.broadcast.emit('cell added to a specific position', 'cell added!');
-        console.log('cell added!');
-    })
+/* -------------------------------------------------------------------------
+-----------------------------RESET --------------------------------------------
+-------------------------------------------------------------------------*/
+
+    socket.on('RESET', async () => {     
+       
+        const get6 = await CellModel.find({position: 6})
+        await CellModel.deleteOne(get6[0])
+        const get4 = await CellModel.find({position: 4})
+        await CellModel.deleteOne(get4[0])
+        const get2 = await CellModel.find({position: 2})
+        await CellModel.deleteOne(get2[0])
+    });
+
+/* -------------------------------------------------------------------------
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------*/
+
 
 });
 

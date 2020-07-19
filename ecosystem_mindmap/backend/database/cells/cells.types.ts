@@ -1,77 +1,39 @@
 import { Document, Model } from 'mongoose';
 
 export interface ICell {
-    
+    _id: string;
     title: string;
     description: string;
-    positionId: number;
-    titleOfMindMap: string;
-    titleStemCell: string;
+    position: number;
+    idStemCell: string;
     stemCell: boolean;
-
 };
 
-export interface ICellDocument extends ICell, Document {
-
-    sameTitle: (this: ICellDocument) => Promise<Document[]>;
-    getTitleByIdPosition: (this: ICellDocument) => Promise<Document[]>;
-
+export interface IGetStemCellResp {
+    "request type": string;
+    error:boolean;
+    message?: string;
+    stemCell?: ICell[];
 };
+
+export interface IGetCellsResp {
+    "request type": string;
+    error:boolean;
+    message?: string;
+    cells?: ICell[];
+};
+
+export interface INewCell {
+    "request type": string;
+    error:boolean;
+    message?: string;
+    cellCreated?: ICell;
+};
+
+ export interface ICellDocument extends Document {
+
+}; 
 
 export interface ICellModel extends Model<ICellDocument> {
     
-    findOneOrCreate: (
-        this: ICellModel,
-        {
-            title,
-            description,
-            positionId,
-            titleOfMindMap,
-            titleStemCell,
-            stemCell,
-    
-        }: {
-
-            title: string;
-            description: string;
-            positionId: number;
-            titleOfMindMap: string;
-            titleStemCell: string;
-            stemCell: boolean;
-        
-        }
-    ) => Promise<ICellDocument>;
-    
-    findByPositionId: (
-        this: ICellModel,
-        positionId: number
-    ) => Promise<ICellDocument[]>;
-
-    updateCell: (
-        this: ICellModel,
-        _idCell: number,
-        cellUpdated: any
-    ) => Promise<void>;
-
-    findByStemCell: (
-        this: ICellModel,
-        {
-            titleStemCell,
-            stemCell,
-        }:{
-        titleStemCell: string,
-        stemCell: boolean,
-        }
-    ) => Promise<ICellDocument[]>;
-
-    findStemCell: (
-        this: ICellModel,
-        {
-            titleOfMindMap,
-            stemCell,
-        }:{
-            titleOfMindMap: string,
-            stemCell: boolean,
-        }
-    ) => Promise<ICellDocument>;
-}
+};
