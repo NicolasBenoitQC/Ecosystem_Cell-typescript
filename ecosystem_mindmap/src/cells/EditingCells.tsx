@@ -39,7 +39,7 @@ export const EditingCells: React.FC = () => {
     const getCell = (idCell: any) => {
         const socket = io.connect(ENDPOINT);
         socket.emit('get cell by _id', idCell ,(data:any) => {
-            setCell(data[0]);
+            setCell(data.cell[0]);
         })
     };
 

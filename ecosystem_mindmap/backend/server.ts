@@ -3,7 +3,7 @@ import { Connect } from './database/database';
 import http from 'http';
 import socketio from 'socket.io';
 import { 
-    getStemCellByMindMap, getCellsByStemCell, 
+    getStemCellByMindMap, getCellsByStemCell, getCellById,
     createDefaultStemCell, createFirstCell,
     addCellInThisPosition, deleteCellById
          } from './database/cells/cells.methods';
@@ -85,11 +85,10 @@ io.on('connection', async (socket) => {
 
     socket.on('get cell by _id', 
         async (idCell: string, fn) => {
-            await CellModel.find({_id: idCell})
-                .then(async cell => await fn(cell))
-                .catch( error => console.log('Error from request get cell by _id : ' + error ))
+            const cell = await getCellById(idCell);
+            await fn(cell);
         
-            console.log('cell obtained by ID')
+            console.log(cell);
         }
     );
 
