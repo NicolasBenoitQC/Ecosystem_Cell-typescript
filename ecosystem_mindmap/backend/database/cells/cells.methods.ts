@@ -1,7 +1,6 @@
 import { CellModel } from './cells.model';
-import { ICell,
-        IGetStemCellResp, IGetCellsResp,
-        INewCell
+import { IGetStemCellResp, IGetCellsByStemCellResp, IGetCellByIdResp, 
+        INewCell,
      } from './cells.types';
 
 /* ------------------------------------------------------------
@@ -37,8 +36,10 @@ export async function newCell(
 ------------------------------------------------------------ */
 
 export async function getStemCellByMindMap (stemCellId: string): Promise<IGetStemCellResp> { //should be change when module mindmap ready (object mindmap)
-    const stemCell: any = await CellModel.find({idStemCell: stemCellId, stemCell: true})
-        .then(stemCellRequest => {return {'request type': 'get Stem Cell By MindMap',
+    const requestType = 'get Stem Cell By MindMap';
+    
+    const stemCell = await CellModel.find({idStemCell: stemCellId, stemCell: true})
+        .then(stemCellRequest => {return  {'request type': requestType,
                                           'error': false, 
                                           'stemCell': stemCellRequest
                                         }})
@@ -49,20 +50,36 @@ export async function getStemCellByMindMap (stemCellId: string): Promise<IGetSte
     return stemCell;
 }
 
-export async function getCellsByStemCell (stemCell: ICell[]): Promise<IGetCellsResp> {
-    const cells:any = await CellModel.find({idStemCell: stemCell[0]._id})
-        .then(stemCellRequest => {return {'request type': 'get Cells By Stem Cell',
+export async function getCellsByStemCell (stemCell_Id: string): Promise<IGetCellsByStemCellResp> {
+    const requestType = 'get Cells By Stem Cell';
+
+    const cells = await CellModel.find({idStemCell: stemCell_Id})
+        .then(cellsRequest => {return {'request type': requestType,
                                           'error': false,
-                                          'cells': stemCellRequest
+                                          'cells': cellsRequest
                                         }})
-        .catch(error => {return {'request type': 'get Cells By Stem Cell',
+        .catch(error => {return {'request type': requestType,
                                  'error': true, 
                                  'message': error}})
     return cells;
 }
 
-export async function createDefaultStemCell (stemCellId: string) {
-    const createDefaultStemCell = await newCell(
+export async function getCellById (cell_Id: string): Promise<IGetCellByIdResp> {
+    const requestType = 'get cells by _id';
+
+    const cell = await CellModel.find({_id: cell_Id})
+        .then(cellRequest => {return {'request type': requestType,
+                                          'error': false,
+                                          'cell': cellRequest
+                                        }})
+        .catch(error => {return {'request type': requestType,
+                                 'error': true, 
+                                 'message': error}})
+    return cell;
+}
+
+export async function createDefaultStemCell (stemCellId: string): Promise<INewCell> {
+    const createDefaultStemCell: INewCell = await newCell(
         'Stem Cell',
         'This is the stem cell of this mind map',
         0,
@@ -72,24 +89,24 @@ export async function createDefaultStemCell (stemCellId: string) {
     return createDefaultStemCell;
 }
 
-export async function createFirstCell (stemCellReferent: ICell[]) {    
-    const createFirstCell = await newCell(
+export async function createFirstCell (stemCell_idReferent: string): Promise<INewCell> {    
+    const createFirstCell: INewCell = await newCell(
         'New Cell',
         '',
         2,
-        stemCellReferent[0]._id,
+        stemCell_idReferent,
         false
     );
     
     return createFirstCell;
 };
 
-export async function addCellInThisPosition (positionOfNewCell: number, stemCellReferent: ICell[]) {
-    const cells: IGetCellsResp = await getCellsByStemCell(stemCellReferent);
-    const newQteCell = cells.cells.length*2;
+export async function addCellInThisPosition (positionOfNewCell: number, stemCell_idReferent: string): Promise<INewCell> {
+    const cells: IGetCellsByStemCellResp = await getCellsByStemCell(stemCell_idReferent);
+    const newQteCell: number = cells.cells.length*2;
 
     for(let counter = positionOfNewCell; counter <= newQteCell; counter+=2) {
-        const object = await CellModel.find({position: counter, idStemCell: stemCellReferent[0]._id});
+        const object = await CellModel.find({position: counter, idStemCell: stemCell_idReferent});
         await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter + 2})
             .then(() => console.log('cell updated! : ' + object[0]._id))
             .catch(error => console.log('Error update cell : ' + error))
@@ -99,39 +116,28 @@ export async function addCellInThisPosition (positionOfNewCell: number, stemCell
         'New Cell added',
         '',
         positionOfNewCell,
-        stemCellReferent[0]._id,
+        stemCell_idReferent,
         false
     );
     
     return addCell;
 };
 
-export async function deleteCellById (cell_id: string, stemCell_id: string) {
+export async function deleteCellById (cell_id: string, stemCell_id: string): Promise<IGetCellByIdResp> {
 
-    const cells:any = await CellModel.find({idStemCell: stemCell_id})
-        .then(stemCellRequest => {return {'request type': 'get Cells By Stem Cell',
-                                          'error': false,
-                                          'cells': stemCellRequest
-                                        }})
-        .catch(error => {return {'request type': 'get Cells By Stem Cell',
-                                 'error': true, 
-                                 'message': error}})
-
-   const cellToBeDelete : any = await CellModel.find({_id: cell_id});
-
-   const positionCellToBeDelete:number = await cellToBeDelete[0].position
+    const cells: IGetCellsByStemCellResp = await getCellsByStemCell(stemCell_id);
+    const cellToBeDelete = await getCellById(cell_id);
+    const positionCellToBeDelete:number = await cellToBeDelete.cell[0].position;
+    const qteCell: number = cells.cells.length*2;
    
-   const qteCell = cells.cells.length*2
-   console.log(qteCell);
-   
-   for(let counter = positionCellToBeDelete; counter <= qteCell; counter+=2) {
-      const object = await CellModel.find({position: counter, idStemCell: stemCell_id});
-      console.log(object);
+    for(let counter = positionCellToBeDelete; counter <= qteCell; counter+=2) {
+        const object = await CellModel.find({position: counter, idStemCell: stemCell_id});
       
-      await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter - 2})
-        .then(() => console.log('cell updated! : ' + object[0]._id))
-        .catch(error => console.log('Error update cell : ' + error))
-   }
-   await CellModel.findByIdAndDelete(cellToBeDelete[0]._id); 
-   
+        await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter - 2})
+            .then(() => console.log('cell updated! : ' + object[0]._id))
+            .catch(error => console.log('Error update cell : ' + error))
+    };
+    await CellModel.findByIdAndDelete(cellToBeDelete.cell[0]._id); 
+
+    return cellToBeDelete;
 };

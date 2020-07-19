@@ -3,11 +3,11 @@ import { Connect } from './database/database';
 import http from 'http';
 import socketio from 'socket.io';
 import { 
-    getStemCellByMindMap, getCellsByStemCell,
+    getStemCellByMindMap, getCellsByStemCell, 
     createDefaultStemCell, createFirstCell,
     addCellInThisPosition, deleteCellById
          } from './database/cells/cells.methods';
-import { ICell } from './database/cells/cells.types';
+import { ICell, IGetCellsByStemCellResp, IGetStemCellResp } from './database/cells/cells.types';
 import { CellModel } from './database/cells/cells.model';
 
 
@@ -25,70 +25,98 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 io.on('connection', async (socket) => {
- 
-    socket.on('user join the mind map', async (name, fn) => {
-        await fn(`welcome ${name} to the mindmap`);  
-        socket.broadcast.emit('broadcast the user join the mindmap', 
-        `new user ${name} has join the mindmap`);
-    });
 
-    socket.on('get stem cell by mind map', async (stemCellId, fn) => {     
-        const stemCell = await getStemCellByMindMap(stemCellId);
-        await fn(stemCell);
-        //console.log(stemCell);
-    });
+    socket.on('user join the mind map', 
+        async (name, fn) => {
+            await fn(`welcome ${name} to the mindmap`);  
+            
+            socket.broadcast.emit('broadcast the user join the mindmap', 
+                                    `new user ${name} has join the mindmap`);
+        }
+    );
 
-    socket.on('get cells by stem cell', async (stemCell, fn) => {     
-        const cells = await getCellsByStemCell(stemCell);  
-        await fn(cells);
-        //console.log(cells);
-    });
+    socket.on('get stem cell by mind map', 
+        async (stemCellId, fn) => {     
+            const stemCell = await getStemCellByMindMap(stemCellId);
+            await fn(stemCell);
+            console.log(stemCell);
+        }
+    );
 
-    socket.on('create default stem cell', async (stemCellId, fn) => {     
-        const defaultStemCell = await createDefaultStemCell(stemCellId);  
-        await fn(defaultStemCell);
-        //console.log(defaultStemCell);
-    });
+    socket.on('get cells by stem cell', 
+        async (stemCell, fn) => {     
+            const cells = await getCellsByStemCell(stemCell[0]._id);  
+            await fn(cells);
+            console.log(cells);
+        }
+    );
 
-    socket.on('create first cell of the stem cell', async (stemCellReferent: ICell[], fn) => {
-        const newCell = await createFirstCell (stemCellReferent);
-        await fn(newCell);
-        socket.broadcast.emit('first cell of the mindmap created', 'return first cell');
-        console.log(newCell);
-    });
+    socket.on('create default stem cell', 
+        async (stemCellId, fn) => {     
+            const defaultStemCell = await createDefaultStemCell(stemCellId);  
+            await fn(defaultStemCell);
+            
+            console.log(defaultStemCell);
+        }
+    );
+
+    socket.on('create first cell of the stem cell', 
+        async (stemCellReferent: ICell[], fn) => {
+            const newCell = await createFirstCell (stemCellReferent[0]._id);
+            await fn(newCell);
+            
+            socket.broadcast.emit('first cell of the mindmap created', 
+                'return first cell');
+
+            console.log(newCell);
+        }
+    );
 
     socket.on('add cell in this position', 
-        async (positionOfNewCell:number, stemCellReferent: ICell[], fn) => {
-            const newCell = await addCellInThisPosition(positionOfNewCell, stemCellReferent);
-            socket.broadcast.emit('cell added to a specific position', await fn(newCell));
+        async (positionOfNewCell:number, stemCellReferent:ICell[], fn) => {
+            const newCell = await addCellInThisPosition(positionOfNewCell, stemCellReferent[0]._id);
+            
+            socket.broadcast.emit('cell added to a specific position', 
+                await fn(newCell));
+
             console.log(newCell)
         }
     );
 
-    socket.on('get cell by _id', async (idCell, fn) => {
-        await CellModel.find({_id: idCell})
-        .then(async cell => await fn(cell))
-        .catch( error => console.log('Error from request get cell by _id : ' + error ))
+    socket.on('get cell by _id', 
+        async (idCell: string, fn) => {
+            await CellModel.find({_id: idCell})
+                .then(async cell => await fn(cell))
+                .catch( error => console.log('Error from request get cell by _id : ' + error ))
         
-        console.log('cell obtained by ID')
-    });
+            console.log('cell obtained by ID')
+        }
+    );
 
-    socket.on('update props cell', async (idCell, cellUpdated) => {
-        await CellModel.findOneAndUpdate({_id: idCell}, cellUpdated)
-        .then(() => console.log('cell updated!'))
-        .catch(error => console.log('Error update cell : ' + error)) 
+    socket.on('update props cell', 
+        async (idCell: string, cellUpdated:ICell) => {
+            await CellModel.findOneAndUpdate({_id: idCell}, cellUpdated)
+                .then(() => console.log('cell updated!'))
+                .catch(error => console.log('Error update cell : ' + error)) 
         
-        socket.broadcast.emit('cell has updated', 'one cell has updated!')
-    });
+            socket.broadcast.emit('cell has updated', 
+                'one cell has updated!')
+        }
+    );
 
-    socket.on('delete cell by id', async (cell_id, stemCell_id) => {
-        await deleteCellById(cell_id, stemCell_id)
-        socket.broadcast.emit('cell deleted by id', `cell ${cell_id} deleted!`);
-        console.log(`cell ${cell_id} deleted!`);
-    });
+    socket.on('delete cell by id', 
+        async (cell_id: string, stemCell_id : string) => {
+            await deleteCellById(cell_id, stemCell_id)
+        
+            socket.broadcast.emit('cell deleted by id', 
+                `cell ${cell_id} deleted!`);
+        
+            console.log(`cell ${cell_id} deleted!`);
+        }
+    );
 
 /* -------------------------------------------------------------------------
------------------------------RESET --------------------------------------------
+-----------------------------RESET use for DEV -----------------------------
 -------------------------------------------------------------------------*/
 
     socket.on('RESET', async () => {     
@@ -104,8 +132,6 @@ io.on('connection', async (socket) => {
 /* -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------*/
-
-
 });
 
 server.listen(port, () => {

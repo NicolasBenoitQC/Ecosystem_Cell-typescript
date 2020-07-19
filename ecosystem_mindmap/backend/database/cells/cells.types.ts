@@ -1,5 +1,13 @@
 import { Document, Model } from 'mongoose';
 
+export interface ICellSchema {
+    title: string;
+    description: string;
+    position: number;
+    idStemCell: string;
+    stemCell: boolean;
+};
+
 export interface ICell {
     _id: string;
     title: string;
@@ -16,12 +24,19 @@ export interface IGetStemCellResp {
     stemCell?: ICell[];
 };
 
-export interface IGetCellsResp {
+export interface IGetCellsByStemCellResp {
     "request type": string;
     error:boolean;
     message?: string;
     cells?: ICell[];
 };
+
+export interface IGetCellByIdResp {
+    "request type": string;
+    error:boolean;
+    message?: string;
+    cell?: ICell[];
+}
 
 export interface INewCell {
     "request type": string;
@@ -30,8 +45,7 @@ export interface INewCell {
     cellCreated?: ICell;
 };
 
- export interface ICellDocument extends Document {
-
+ export interface ICellDocument extends ICellSchema ,Document {
 }; 
 
 export interface ICellModel extends Model<ICellDocument> {
