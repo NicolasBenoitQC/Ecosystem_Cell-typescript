@@ -44,7 +44,6 @@ export const Cells: React.FC<CellProps> = ({cell, quantityCells, actionDoubleCli
                 strokeWidth='0.5'
                 fill='gray'
             />
-
             <foreignObject
                 x={centerOfCellX-radiusCells}
                 y={centerOfCellY-radiusCells}
@@ -60,6 +59,14 @@ export const Cells: React.FC<CellProps> = ({cell, quantityCells, actionDoubleCli
                     </Link>
                 </div>
             </foreignObject>
+            <circle className='cellsLayer'
+                key={positionIdCell+2}
+                cx={centerOfCellX}
+                cy={centerOfCellY}
+                r={radiusCells}
+                fillOpacity='0.1'
+                onDoubleClick={() => actionDoubleClick(cell)}
+            />
         </svg>
     )
 };

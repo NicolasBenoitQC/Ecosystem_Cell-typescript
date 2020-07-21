@@ -124,6 +124,28 @@ export async function addCellInThisPosition (positionOfNewCell: number, stemCell
     return addCell;
 };
 
+export async function addCell (cell: ICell): Promise<INewCell> {
+    const cells: IGetCellsByStemCellResp = await getCellsByStemCell(cell.idStemCell);
+    const newQteCell: number = cells.cells.length*2;
+
+    for(let counter = cell.position; counter <= newQteCell; counter+=2) {
+        const object = await CellModel.find({position: counter, idStemCell: cell.idStemCell});
+        await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter + 2})
+            .then(() => console.log('cell updated! : ' + object[0]._id))
+            .catch(error => console.log('Error update cell : ' + error))
+    }
+
+    const addCell = await newCell(
+        cell.title,
+        cell.description,
+        cell.position,
+        cell.idStemCell,
+        false
+    );
+    
+    return addCell;
+};
+
 export async function deleteCellById (cell_id: string, stemCell_id: string): Promise<IGetCellByIdResp> {
 
     const cells: IGetCellsByStemCellResp = await getCellsByStemCell(stemCell_id);

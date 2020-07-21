@@ -5,7 +5,7 @@ import socketio from 'socket.io';
 import { 
     getStemCellByMindMap, getCellsByStemCell, getCellById,
     createDefaultStemCell, createFirstCell,
-    addCellInThisPosition, deleteCellById,
+    addCellInThisPosition, addCell, deleteCellById,
     updatePropsCellById,
          } from './database/cells/cells.methods';
 import { ICell} from './database/cells/cells.types';
@@ -76,6 +76,19 @@ io.on('connection', async (socket) => {
     socket.on('add cell in this position', 
         async (positionOfNewCell:number, stemCellReferent:ICell[], fn) => {
             const newCell = await addCellInThisPosition(positionOfNewCell, stemCellReferent[0]._id);
+            await fn(newCell);
+            
+            socket.broadcast.emit('cell added to a specific position', 
+                await fn(newCell));
+
+            console.log(newCell)
+        }
+    );
+
+    socket.on('add cell', 
+        async (cell:ICell, fn) => {
+            const newCell = await addCell(cell);
+            await fn(newCell);
             
             socket.broadcast.emit('cell added to a specific position', 
                 await fn(newCell));

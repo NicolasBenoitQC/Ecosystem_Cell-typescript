@@ -8,7 +8,7 @@ import io from 'socket.io-client';
 import { WidthSvgViewBox, HeightSvgViewBox } from '../svg-setting';
 
 export const MindMapBuilder: React.FC = () => {
-    const [stemCellId, setStemCellId] = useState('af46d28s')
+    const [mainStemCellId, setMainStemCellId] = useState('af46d28s')
     const [cells, setCells] = useState<Cell[]>([]);
     const [stemCell, setStemCell] = useState<StemCell[]>([]);
     const [widthSvgViewBox] = useState(WidthSvgViewBox);
@@ -19,35 +19,37 @@ export const MindMapBuilder: React.FC = () => {
         const socket = io.connect(ENDPOINT);
 
         socket.emit('user join the mind map', 'Nicolas',  (data: string) => {
-            getStemCellByMindMap(stemCellId);
+            getStemCellByMindMap(mainStemCellId);
             
         });
 
         socket.on('broadcast the user join the mindmap', (data: string) => {
-            //console.log(data);
+            console.log(data);
         });
         socket.on('first cell of the mindmap created', (data: any) => {
-            //getCellsByStemCell(stemCell)
-            getStemCellByMindMap(stemCellId);
-            //console.log(data);
-            
+            getStemCellByMindMap(mainStemCellId);
+            console.log(data);
         })
 
-        socket.on('cell added to a specific position', (data:string) => {
-            getStemCellByMindMap(stemCellId);
-            //console.log(data);
+        socket.on('cell added to a specific position', (data:any) => {
+            getStemCellByMindMap(mainStemCellId);
+            console.log(data);
         })
 
-        socket.on('cell has updated', (data: string) => {
-            //getCellsByStemCell(stemCell)
-            //console.log(data);
+        socket.on('cell has updated', (data: any) => {
+            getStemCellByMindMap(mainStemCellId);
+            console.log(data);
         })
-        socket.on('cell deleted by id', (data:string) => {
-            //getCellsByStemCell(stemCell)
-            //console.log(data);
+        socket.on('cell deleted by id', (data:any) => {
+            getStemCellByMindMap(mainStemCellId);
+            console.log(data);
         })
         
     },[]);
+
+    useEffect(() => {
+        getCellsByStemCell(stemCell);
+    },[stemCell]);
  
 /* -------------------------------------------------------------------------------------------------
     ----- Request socket.io and database -----------------------------------------------------------     
@@ -58,15 +60,16 @@ export const MindMapBuilder: React.FC = () => {
             const socket = io.connect(ENDPOINT);
             socket.emit('get stem cell by mind map', mindMapRef, async(data:any) => {
                 if (data.stemCell.length === 0) {
-                    socket.emit('create default stem cell', stemCellId, async (data: any) => {
+                    socket.emit('create default stem cell', mainStemCellId, async (data: any) => {
                         setStemCell([data.cellCreated]);
-                        setStemCellId(data.cellCreated._id)
-                        //console.log(data.cellCreated._id);
+                        setMainStemCellId(data.cellCreated._id);
+                        //console.log(data);
                     }); 
                 } else {
                     setStemCell(data.stemCell);
                     getCellsByStemCell(data.stemCell);
-                    setStemCellId(data.stemCell[0]._id)
+                    setMainStemCellId(data.stemCell[0]._id);
+                    //console.log(data);
                 }
             });
         } catch (error) {
@@ -78,12 +81,12 @@ export const MindMapBuilder: React.FC = () => {
         const socket = io.connect(ENDPOINT);
         socket.emit('get cells by stem cell', stemCellRef, (data:any) => {
             setCells(data.cells);
-            console.log(data.cells)
+            //console.log(data);
         });
     };
 
-    const doubleclick = () => {
-        getCellsByStemCell(stemCell)
+    const doubleclick = (test:Cell) => {
+        setStemCell([test]);
     };
 
     const resetModel = async () => {
@@ -106,7 +109,6 @@ export const MindMapBuilder: React.FC = () => {
     };
 
     const listCells = () => {
-        //console.log(stemCell[0].title)              JMA pourquoi ca fonctionne pas ?
         return cells.map((currentCell: Cell) => {
              return <Cells
                     key={currentCell.position}
@@ -115,7 +117,6 @@ export const MindMapBuilder: React.FC = () => {
                     actionDoubleClick={doubleclick} 
                 />
         }); 
-        
     };
 
     const listbuttonAddCell = () => {
@@ -126,6 +127,7 @@ export const MindMapBuilder: React.FC = () => {
                 quantityCells={cells.length+2}
                 stemCellReferent={stemCell}
                 noCell={true}
+                cellReferent={cells[0]}
             />
         } else {
             return cells.map((currentCell: Cell) => {
@@ -135,6 +137,7 @@ export const MindMapBuilder: React.FC = () => {
                         quantityCells={cells.length}
                         stemCellReferent={stemCell}
                         noCell={false}
+                        cellReferent= {currentCell}
                     />
             });
         };
@@ -162,8 +165,6 @@ export const MindMapBuilder: React.FC = () => {
                     reset
                 </button>
             </div>
-
-
         </div>
     );
 };
