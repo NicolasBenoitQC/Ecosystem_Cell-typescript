@@ -1,5 +1,7 @@
 import { CellModel } from './cells.model';
 import { ICell,
+     IgetChildCellsByStemCellId,
+        IgetStemCell, IgetEcoSystemByStemCellId, 
         IGetStemCellResp, IGetCellsByStemCellResp, IGetCellByIdResp, 
         INewCell, IUpdatePropsCellResp, 
      } from './cells.types';
@@ -29,12 +31,99 @@ export async function newCell(
         return newCellCreated;
 };
 
+export async function getStemCellByTheMindMapId (mindMapId: string): Promise<IgetStemCell> {
+    const requestType = 'Get stem cell by the mind map id';
+    
+    const stemCell_Request = await CellModel.find({idStemCell: mindMapId})
+        .then(stemCell_Response => {return  {'request type': requestType,
+                                          'error': false, 
+                                          'stemCell_Request': stemCell_Response
+                                        }})
+        .catch(error => {return {'request type': requestType,
+                                 'error': true, 
+                                 'message': error
+                                }})
+    return stemCell_Request;
+};
+
+export async function getStemCellById (stemCellId: string): Promise<IgetStemCell> {
+    const requestType = 'Get stem cell by id';
+    
+    const stemCell_Request = await CellModel.find({_id: stemCellId})
+        .then(stemCell_Response => {return  {'request type': requestType,
+                                          'error': false, 
+                                          'stemCell_Request': stemCell_Response
+                                        }})
+        .catch(error => {return {'request type': requestType,
+                                 'error': true, 
+                                 'message': error
+                                }})
+    return stemCell_Request;
+};
+
+export async function getChildCellsByStemCellId (stemCellId: string): Promise<IgetChildCellsByStemCellId> {
+    const requestType = 'Get child cells by stem cell id.';
+
+    const cells_Request = await CellModel.find({idStemCell: stemCellId})
+        .then(cells_Response => {return  {'request type': requestType,
+                                          'error': false, 
+                                          'cells_Request': cells_Response
+                                        }})
+        .catch(error => {return {'request type': requestType,
+                                 'error': true, 
+                                 'message': error
+                                }})
+    return cells_Request;
+};
+
 /* __________________________________________________________ */
 
 
 /* -----------------------------------------------------------
 --------------- request data base --------------------------
 ------------------------------------------------------------ */
+export async function getEcoSystemByStemCellId (stemCell_id: string, parentIsMindMap: boolean): Promise<IgetEcoSystemByStemCellId> {
+    const requestType = 'Get ecosystem, to define stem cell & cells.';
+
+    let ecosystem: IgetEcoSystemByStemCellId ;
+
+    if (parentIsMindMap) {
+        try {
+            const stemCell: IgetStemCell = await getStemCellByTheMindMapId(stemCell_id);
+            const cells: IgetChildCellsByStemCellId  = await getChildCellsByStemCellId(stemCell.stemCell_Request[0]?._id);
+
+            ecosystem = {
+                            'request type': requestType,
+                            'error': false,
+                            stemCellOfEcosystem: stemCell,
+                            cellsOfEcosystem: cells,
+            };
+        } catch (error) {
+                ecosystem = {
+                                'request type': requestType,
+                                'error': true, 
+                                'message': error
+                }
+        };
+    } else {
+        try {
+            const stemCell: IgetStemCell = await getStemCellById(stemCell_id);
+            const cells: IgetChildCellsByStemCellId  = await getChildCellsByStemCellId(stemCell.stemCell_Request[0]?._id)
+            ecosystem = {
+                            'request type': requestType,
+                            'error': false,
+                            stemCellOfEcosystem: stemCell,
+                            cellsOfEcosystem: cells,
+            };
+        } catch (error) {
+                ecosystem = {'request type': requestType,
+                                    'error': true, 
+                                    'message': error
+                }
+        };        
+    }
+    return ecosystem
+};
 
 export async function getStemCellByMindMap (stemCellId: string): Promise<IGetStemCellResp> { //should be change when module mindmap ready (object mindmap)
     const requestType = 'get Stem Cell By MindMap';
@@ -109,7 +198,7 @@ export async function addCellInThisPosition (positionOfNewCell: number, stemCell
     for(let counter = positionOfNewCell; counter <= newQteCell; counter+=2) {
         const object = await CellModel.find({position: counter, idStemCell: stemCell_idReferent});
         await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter + 2})
-            .then(() => console.log('cell updated! : ' + object[0]._id))
+            .then(() => console.log('cell added! : ' + object[0]._id))
             .catch(error => console.log('Error update cell : ' + error))
     }
 
@@ -131,7 +220,7 @@ export async function addCell (cell: ICell): Promise<INewCell> {
     for(let counter = cell.position; counter <= newQteCell; counter+=2) {
         const object = await CellModel.find({position: counter, idStemCell: cell.idStemCell});
         await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter + 2})
-            .then(() => console.log('cell updated! : ' + object[0]._id))
+            .then(() => console.log('cell added! : ' + object[0]._id))
             .catch(error => console.log('Error update cell : ' + error))
     }
 
@@ -146,6 +235,22 @@ export async function addCell (cell: ICell): Promise<INewCell> {
     return addCell;
 };
 
+export async function updatePropsCellById (cellUpdated:ICell):  Promise<IUpdatePropsCellResp>  {
+    const requestType = 'update props cell';
+    //console.log(cellUpdated)
+
+    const updateCell = await CellModel.findOneAndUpdate({_id: cellUpdated._id}, cellUpdated)
+        .then(cellsRequest => {return {'request type': requestType,
+                                        'error': false,
+                                        'cells': cellsRequest
+                                        }})
+        .catch(error => {return {'request type': requestType,
+                                    'error': true, 
+                                    'message': error}}) 
+
+    return updateCell;
+}
+
 export async function deleteCellById (cell_id: string, stemCell_id: string): Promise<IGetCellByIdResp> {
 
     const cells: IGetCellsByStemCellResp = await getCellsByStemCell(stemCell_id);
@@ -157,7 +262,7 @@ export async function deleteCellById (cell_id: string, stemCell_id: string): Pro
         const object = await CellModel.find({position: counter, idStemCell: stemCell_id});
       
         await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter - 2})
-            .then(() => console.log('cell updated! : ' + object[0]._id))
+            .then(() => console.log('cell deleted! : ' + object[0]._id))
             .catch(error => console.log('Error update cell : ' + error))
     };
     await CellModel.findByIdAndDelete(cellToBeDelete.cell[0]._id); 
@@ -165,17 +270,24 @@ export async function deleteCellById (cell_id: string, stemCell_id: string): Pro
     return cellToBeDelete;
 };
 
-export async function updatePropsCellById (Cell_id: string, cellUpdated:ICell): Promise<IUpdatePropsCellResp> {
-    const requestType = 'update props cell';
+export async function deleteCellAndAllChilds (cell_id: string, stemCell_id: string) {
+    const listCellsDeleted:any = [];
+    
 
-    const updateCell = await CellModel.findOneAndUpdate({_id: Cell_id}, cellUpdated)
-        .then(cellsRequest => {return {'request type': requestType,
-                                        'error': false,
-                                        'cells': cellsRequest
-                                        }})
-        .catch(error => {return {'request type': requestType,
-                                    'error': true, 
-                                    'message': error}})
+    const listChilds: any = async () => {
+        await CellModel.find({idStemCell: cell_id})
+        .then(listChildsRq => {
+            return listChildsRq
+        
+        
+        })
+        .catch(error => console.log(error));
+        
+    }
+    
+    await listChilds.map((currentCell:any) => {
+        listCellsDeleted.unshift(currentCell);
+    });
 
-    return updateCell;
+    return listCellsDeleted;
 }

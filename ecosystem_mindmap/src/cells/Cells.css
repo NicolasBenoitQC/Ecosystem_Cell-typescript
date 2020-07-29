@@ -31,12 +31,13 @@
     border-radius: 70%;
 }
 
-.add {
+/* .add {
     display: flex;
     text-align: center;
     align-items: center;
     justify-content: center;
-}
+    font-size: 10%;
+} */
 
 .add:hover {
     cursor: pointer;
@@ -56,3 +57,9 @@
     cursor:pointer;
 }
 
+.add-cells-texte{
+    font-size: 3px;
+    color: black;
+    text-anchor: middle;
+    font-weight: bold;    
+}

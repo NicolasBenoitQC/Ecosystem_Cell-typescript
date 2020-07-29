@@ -17,10 +17,39 @@ export interface ICell {
     stemCell: boolean;
 };
 
+export interface IgetStemCellByTheMindMapIdRes {
+    "request type": string;
+    error:boolean;
+    message?: any;
+    stemCell_Request?: ICell;
+};
+
+export interface IgetStemCell {
+    "request type": string;
+    error:boolean;
+    message?: any;
+    stemCell_Request?: ICell[];
+};
+
+export interface IgetChildCellsByStemCellId {
+    "request type": string;
+    error:boolean;
+    message?: any;
+    cells_Request?: ICell[];
+};
+
+export interface IgetEcoSystemByStemCellId {
+    "request type": string;
+    error:boolean;
+    message?: any;
+    stemCellOfEcosystem?: IgetStemCell;
+    cellsOfEcosystem?: IgetChildCellsByStemCellId;
+};
+
 export interface IGetStemCellResp {
     "request type": string;
     error:boolean;
-    message?: string;
+    message?: any;
     stemCell?: ICell[];
 };
 

@@ -1,13 +1,26 @@
-
+type MindMap = {_id: string;
+    title: string;
+    description: string;
+    active: boolean;
+}
 
 type Cell = {
-    _id: string;
+    _id?: string;
     title: string;
     description: string;
     position: number;
     idStemCell: string;
     stemCell: boolean;
 };
+
+type SchemaCell = {
+    title: string;
+    description: string;
+    position: number;
+    idStemCell: string;
+    stemCell: boolean;
+};
+
 type StemCell = {
     _id: string;
     title: string;
