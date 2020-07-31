@@ -87,3 +87,15 @@ export interface IUpdatePropsCellResp {
 export interface ICellModel extends Model<ICellDocument> {
     
 };
+
+export interface ICellHierarchySchema {
+    cell: string;
+    parents: string;
+};
+
+export interface ICellDocumentHierarchy extends ICellHierarchySchema ,Document {
+};
+
+export interface ICellHierarchyModel extends Model<ICellDocumentHierarchy> {
+    
+};

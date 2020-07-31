@@ -25,6 +25,7 @@ export const MindMapBuilder: React.FC = () => {
     const [stemCell, setStemCell] = useState<StemCell[]>([]);
     const [refresh, setRefresh] = useState<number>(1);
     const [refreshCells, setRefreshCells] = useState<number>(1);
+    const [parentGenealogy, setParentGenealogy] = useState<any[]>([]);
     
     useEffect( () => {
         getEcosystem('connection');
@@ -32,7 +33,6 @@ export const MindMapBuilder: React.FC = () => {
 
     useEffect(()=>{
         getEcosystem('refresh');
-        
     },[refresh])
 
     useEffect(()=>{
@@ -60,9 +60,11 @@ export const MindMapBuilder: React.FC = () => {
                             console.log('mind map empty create default stem cell');
                             console.log({'Create default stem Cell.': data, 'id': idRef});
                             setStemCell([data.cellCreated]);
+                            setParentGenealogy([data.cellCreated.title]);
                         });
                     } else {
                             setStemCell(data.stemCellOfEcosystem.stemCell_Request);
+                            setParentGenealogy([data.stemCellOfEcosystem.stemCell_Request[0].title]);
                             setCells(data.cellsOfEcosystem.cells_Request);
                     }; 
                 });
@@ -70,7 +72,9 @@ export const MindMapBuilder: React.FC = () => {
                 if (stemCell[0]) {
                     socket.emit('get ecosystem', stemCell[0]?._id, false , async (data:any) => {
                         setStemCell(data.stemCellOfEcosystem.stemCell_Request);
+                        //setParentGenealogy([data.cellsOfEcosystem.cells_Request[0].title]);
                         setCells(data.cellsOfEcosystem.cells_Request);
+                        
                         //console.log({'REFRESH : data request get ecosystem.': data});
                     });
                 } else {
@@ -104,22 +108,39 @@ export const MindMapBuilder: React.FC = () => {
 
 
 
-    const doubleClick:any = async (test:StemCell) => {
+    const doubleClick:any = async (cell:StemCell) => {
         const socket = io.connect(ENDPOINT);
-        socket.emit('get cell by _id', test._id, (data:any) => {
+        socket.emit('get cell by _id', cell._id, (data:any) => {
             setStemCell(data.cell);
+            addParentGenealogy(cell.title);
             refreshEcosystem();
         })
 
     };
 
     const returnPreviousStemCell = () => {
-        const socket = io.connect(ENDPOINT);
-        socket.emit('get cell by _id', stemCell[0].idStemCell, (data:any) => {
-            setStemCell(data.cell);
-            refreshEcosystem();
-        })
+        if (stemCell[0].idStemCell === mindMap[0]._id) {
+            return;
+        } else {
+            const socket = io.connect(ENDPOINT);
+            socket.emit('get cell by _id', stemCell[0].idStemCell, (data:any) => {
+                setStemCell(data.cell);
+                removeParentGenealogy();
+                refreshEcosystem();
+            })
+        }
     }
+
+    const addParentGenealogy = (title:string) => {
+        parentGenealogy.unshift(title);
+        console.log(parentGenealogy);
+        
+    };
+
+    const removeParentGenealogy = () => {
+        parentGenealogy.shift()
+        console.log(parentGenealogy);
+    };
 
 /* ---------------------------------------------------------------------------------------------------
     ----- Element ------------------------------------------------------------------------------------     
@@ -174,12 +195,12 @@ export const MindMapBuilder: React.FC = () => {
     };
 
     const check = () => {
-        console.log({
-            'Check!!!!!': '',
-            'id': stemCell[0]?._id,
-            'stem cell': stemCell,
-            'cells': cells
-        });
+        const check = parentGenealogy.find(name => name.value === '1.a.3')
+        if (check) {
+            console.log(check)
+        } else {
+            console.log('title not found')
+        }
     }
 
     const resetModel = async () => {
@@ -212,14 +233,6 @@ export const MindMapBuilder: React.FC = () => {
                 </button>
                 <button onClick={returnPreviousStemCell}>
                     go back
-                </button>
-                <br/>
-                <button onClick={() => {getEcosystem('connection')}}>
-                getEcosystem CO
-                </button>
-                <br/>
-                <button onClick={() => {getEcosystem('refreshCells')}}>
-                getEcosystem Re
                 </button>
                 <br/>
                 <button onClick={check}>

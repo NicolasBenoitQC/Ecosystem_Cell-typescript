@@ -25,9 +25,6 @@ export default CellSchema;
 
 
 
-
-
-
 /* JMA ca ne fonctionne plus en utilisant juste le typage et comment gerer required.
 
 const CellSchema = new Mongoose.Schema(ICell, {timestamps: true});

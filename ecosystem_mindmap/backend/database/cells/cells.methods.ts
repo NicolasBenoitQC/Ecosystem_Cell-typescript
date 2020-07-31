@@ -1,4 +1,4 @@
-import { CellModel } from './cells.model';
+import { CellModel, CellHierarchyModel } from './cells.model';
 import { ICell,
      IgetChildCellsByStemCellId,
         IgetStemCell, IgetEcoSystemByStemCellId, 
@@ -290,4 +290,13 @@ export async function deleteCellAndAllChilds (cell_id: string, stemCell_id: stri
     });
 
     return listCellsDeleted;
+}
+
+
+
+
+
+export async function addCellHierarchy () {
+   
+    
 }
