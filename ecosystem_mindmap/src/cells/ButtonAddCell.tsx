@@ -4,7 +4,6 @@ import { ENDPOINT } from '../localhost';
 import io from 'socket.io-client';
 
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import Icon from '@material-ui/core/Icon';
 import { WidthSvgViewBox, HeightSvgViewBox } from '../svg-setting'
 
 import Button from '@material-ui/core/Button';
@@ -28,8 +27,10 @@ export const ButtonAddCell: React.FC<CellProps> = ({
         position, quantityCells, stemCellReferent, 
         noCell, cellReferent, refreshCells, parentTreeProps}) => {
     
-    const [open, setOpen] = useState<boolean>(false)
-    const [cell, setCell] = useState(cellReferent); 
+    const [open, setOpen] = useState<boolean>(false);
+    let titleHandle: string;
+    let descriptionHandle: string;
+    //const [cell, setCell] = useState(cellReferent); 
     const myRef = React.createRef();
 /* -------------------------------------------------------------------------------------------------
 ----- setting paramter of Cells ( SVG, foreignObject )----------------------------------------------     
@@ -44,12 +45,11 @@ export const ButtonAddCell: React.FC<CellProps> = ({
     const centerOfAddY = originY - ((radiusAxisRotation) * Math.cos(rotationFormula * positionIdAddCell));
 
     useEffect(() => {
-     
     });
 
     const handleClickOpen= () => {
         setOpen(true);
-         if (noCell === true) {
+ /*         if (noCell === true) {
             const firstCell: Cell = { 
                 title: "", 
                 description: "", 
@@ -60,7 +60,7 @@ export const ButtonAddCell: React.FC<CellProps> = ({
             setCell(firstCell)
         } else { 
             return
-        }; 
+        };  */
     };
 
     const handleClose = () => {
@@ -69,25 +69,53 @@ export const ButtonAddCell: React.FC<CellProps> = ({
 
     const handleChangeTitle = (event:any) => {
         event.preventDefault();
-        cell.title = event.target.value;
+        titleHandle = event.target.value;
     };
 
     const handleChangeDescription = (event:any) => {
         event.preventDefault();
-        cell.description = event.target.value;
+        descriptionHandle = event.target.value;
     };
 
     const saveEditing = async (event:any) => {
         event.preventDefault();
+        const socket = io.connect(ENDPOINT);
         try {
-            const socket = io.connect(ENDPOINT);
-            socket.emit('add cell', cell, parentTreeProps, (data:any) => {
-                //console.log(data);
-                setOpen(false);
-                refreshCells()
-            });
-            
-            
+             if (noCell === true) {
+                 const firstCell: Cell = { 
+                        title: titleHandle, 
+                        description: descriptionHandle, 
+                        position: 2,
+                        idStemCell: stemCellReferent[0]._id,
+                        stemCell: false
+                    };
+                socket.emit('add cell', firstCell, parentTreeProps, (data:any) => {
+                    setOpen(false);
+                    refreshCells()
+                    console.log({
+                        type : 'FIRST CELL save Editing',
+                        cellIo : firstCell,
+                        parentTree: parentTreeProps
+                    });
+                });
+            } else {
+                const cell: Cell = { 
+                    title: titleHandle, 
+                    description: descriptionHandle, 
+                    position: cellReferent.position,
+                    idStemCell: cellReferent.idStemCell,
+                    stemCell: cellReferent.stemCell,
+                };
+                socket.emit('add cell', cell, parentTreeProps, (data:any) => {
+                    setOpen(false);
+                    refreshCells()
+                    console.log({
+                        type : 'CELL save Editing',
+                        cellIo : cell,
+                        parentTree: parentTreeProps
+                    });
+                });
+            }; 
         } catch (error) {
             console.log(error)
         };
@@ -128,6 +156,7 @@ export const ButtonAddCell: React.FC<CellProps> = ({
                             label='Title'
                             onChange={handleChangeTitle}
                             InputLabelProps={{shrink: true}}
+                            autoFocus={true}
                         />
                         <br/>
                         <TextField

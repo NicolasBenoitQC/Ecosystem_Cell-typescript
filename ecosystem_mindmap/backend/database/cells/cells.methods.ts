@@ -119,10 +119,10 @@ export async function deleteChildOfTheCell (cellId: string) {
     
     childsIdList.parents_tree?.map(async currentId => {
         await ParentsTreeOfTheCellModel.findByIdAndDelete(currentId._id)
-            .then(() => { console.log('childs with stem cell in the parent tree deleted : ' + currentId._id)})
+            /* .then(() => { console.log('childs with stem cell in the parent tree deleted : ' + currentId._id)}) */
             .catch(error => { console.log(error) });
         await CellModel.findByIdAndDelete(currentId.cellId)
-            .then(() => { console.log('cell childs deleted : ' + currentId.cellId)})
+            /* .then(() => { console.log('cell childs deleted : ' + currentId.cellId)}) */
             .catch(error => { console.log(error) });
     });
 };
@@ -249,7 +249,7 @@ export async function addCellInThisPosition (positionOfNewCell: number, stemCell
     for(let counter = positionOfNewCell; counter <= newQteCell; counter+=2) {
         const object = await CellModel.find({position: counter, idStemCell: stemCell_idReferent});
         await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter + 2})
-            .then(() => console.log('cell added! : ' + object[0]._id))
+            /* .then(() => console.log('cell added! : ' + object[0]._id)) */
             .catch(error => console.log('Error update cell : ' + error))
     }
 
@@ -271,7 +271,7 @@ export async function addCell (cell: ICell, parentTree: string[]): Promise<INewC
     for(let counter = cell.position; counter <= newQteCell; counter+=2) {
         const object = await CellModel.find({position: counter, idStemCell: cell.idStemCell});
         await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter + 2})
-            .then(() => console.log('cell added! : ' + object[0]._id))
+            /* .then(() => console.log('cell added! : ' + object[0]._id)) */
             .catch(error => console.log('Error update cell : ' + error))
     }
 
@@ -283,8 +283,8 @@ export async function addCell (cell: ICell, parentTree: string[]): Promise<INewC
         false
     );
 
-    const addParentTree = await newParentsTreeOfTheCell(parentTree, addCell.cellCreated._id);
-    console.log(addParentTree)
+    /* const addParentTree =  */await newParentsTreeOfTheCell(parentTree, addCell.cellCreated._id);
+    /* console.log(addParentTree) */
 
     
     
@@ -336,7 +336,7 @@ export async function deleteCellAndAllChilds (cell_id: string, stemCell_id: stri
         const object = await CellModel.find({position: counter, idStemCell: stemCell_id});
       
         await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter - 2})
-            .then(() => console.log('cell updated! : ' + object[0]._id))
+            /* .then(() => console.log('cell updated! : ' + object[0]._id)) */
             .catch(error => console.log('Error update cell : ' + error))
     };
     await CellModel.findByIdAndDelete(cellToBeDelete.cell[0]._id); 

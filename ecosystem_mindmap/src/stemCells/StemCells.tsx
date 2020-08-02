@@ -40,7 +40,7 @@ export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells
 //____________________________________________________________________________________________________
 
      useEffect(() => {
-        console.log('useEffect stem cell')
+        //console.log('useEffect stem cell')
     },[]); 
 
     const handleClickOpen = () => {
@@ -154,6 +154,7 @@ export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells
                                 onChange={handleChangeTitle}
                                 InputLabelProps={{shrink: true}}
                                 onBlur={handleOnBlur}
+                                autoFocus={true}
                             />
                             <br/>
                             <TextField

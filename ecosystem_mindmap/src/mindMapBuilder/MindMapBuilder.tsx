@@ -24,7 +24,7 @@ export const MindMapBuilder: React.FC = () => {
     const [cells, setCells] = useState<Cell[]>([]);
     const [stemCell, setStemCell] = useState<StemCell[]>([]);
     const [refresh, setRefresh] = useState<number>(1);
-    const [refreshCells, setRefreshCells] = useState<number>(1);
+    const [refreshCells] = useState<number>(1);
     const [parentGenealogy, setParentGenealogy] = useState<any[]>([]);
     
     useEffect( () => {
@@ -48,16 +48,16 @@ export const MindMapBuilder: React.FC = () => {
             const socket = io.connect(ENDPOINT);
             if (status === 'connection') {
                 socket.emit('get ecosystem', idRef, true , (data:any) => {
-    console.log({
+    /* console.log({
         'Connection : data request get ecosystem.': data,
         'id': idRef,
         'stem cell': stemCell,
         'cells': cells
-        });
+        }); */
                     if (data.stemCellOfEcosystem.stemCell_Request.length === 0) {
                         socket.emit('create default stem cell', idRef, (data: any) => { 
-                            console.log('mind map empty create default stem cell');
-                            console.log({'Create default stem Cell.': data, 'id': idRef});
+                            //console.log('mind map empty create default stem cell');
+                            //console.log({'Create default stem Cell.': data, 'id': idRef});
                             setStemCell([data.cellCreated]);
                             setParentGenealogy([data.cellCreated._id]);
                         });
@@ -75,7 +75,7 @@ export const MindMapBuilder: React.FC = () => {
                         setCells(data.cellsOfEcosystem.cells_Request);
                     });
                 } else {
-                    console.log('not refresh')
+                    //console.log('not refresh')
                 }
                 
             } else if (status === 'refreshCells') {
@@ -86,7 +86,7 @@ export const MindMapBuilder: React.FC = () => {
                         //console.log({'REFRESH : data request get ecosystem.': data});
                     });
                 } else {
-                    console.log('not refreshCells')
+                    //console.log('not refreshCells')
                 }
                 
             }; 
@@ -99,9 +99,9 @@ export const MindMapBuilder: React.FC = () => {
         setRefresh(refresh+1);
     };
 
-    const refreshCellsEcosystem: any = async () => {
+    /* const refreshCellsEcosystem: any = async () => {
         setRefreshCells(refreshCells+1);
-    };
+    }; */
 
     const doubleClick:any = async (cell:StemCell) => {
         const socket = io.connect(ENDPOINT);
@@ -127,12 +127,12 @@ export const MindMapBuilder: React.FC = () => {
 
     const addParentGenealogy = (id:string) => {
         parentGenealogy.push(id);
-        console.log(parentGenealogy);       
+        //console.log(parentGenealogy);       
     };
 
     const removeParentGenealogy = () => {
         parentGenealogy.pop()
-        console.log(parentGenealogy);
+        //console.log(parentGenealogy);
     };
 
 /* ---------------------------------------------------------------------------------------------------

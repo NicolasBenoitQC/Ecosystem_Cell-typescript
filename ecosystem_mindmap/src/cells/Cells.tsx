@@ -1,5 +1,5 @@
 import './Cells.css'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { WidthSvgViewBox, HeightSvgViewBox } from '../svg-setting'
@@ -36,7 +36,7 @@ export const Cells: React.FC<CellProps> = ({cell, quantityCells, actionDoubleCli
     const pathEditingCell = `/edit/id_cell:${cell._id}/id_stemCell:${cell.idStemCell}`;
 
     useEffect(() => {
-        console.log('useEffect cell')
+        //console.log('useEffect cell')
         //setCellR(cell);
     },[]);
 
