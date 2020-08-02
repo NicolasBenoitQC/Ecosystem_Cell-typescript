@@ -1,7 +1,8 @@
-import './StemCells.css';
-import React, { useEffect, useState } from 'react';
-import { OriginX, OriginY, WidthSvgViewBox } from '../svg-setting';
+// Framwork
+import React, { useState } from 'react';
+import io from 'socket.io-client';
 
+// Framwork material-ui
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,59 +10,65 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+// Local file
+import './StemCell.css';
 import { ENDPOINT } from '../localhost';
-import io from 'socket.io-client';
+import { OriginX, OriginY, WidthSvgViewBox } from '../svg-setting';
 
-interface StemCellsProps {
+// Typing of the properties of the stem cell component.
+interface StemCellProps {
     stemCellProps: StemCell,
     refreshCells: any,
     returnPreviousStemCellProps: any;
 };
 
-export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells, returnPreviousStemCellProps}) => {
-    //const [stemCell, setStemCell] = useState(stemCellProps);
+// ---------------------------------------------------------------------------------------
+// Stem cell component. This element generate the cell in the center of the mind map. 
+// ---------------------------------------------------------------------------------------
+export const StemCell: React.FC<StemCellProps> = ({stemCellProps, refreshCells, returnPreviousStemCellProps}) => {
+
+    // setting of the stem cell.
+    const originX = OriginX;
+    const originY = OriginY;
+    const stemCellRadius = (WidthSvgViewBox/2) / 8;
+    const radiusAxisRotation = (WidthSvgViewBox/2) / 4;
+    const widthTitleField = stemCellRadius * 2;
+    const heightTitleField = stemCellRadius * 2;
+
+    // State variable.
     const [updateStemCell, setUpdateStemCell] = useState(stemCellProps);
     const [title, setTitle] = useState(stemCellProps.title);
     const [description, setDescription] = useState(stemCellProps.description);
     const [open, setOpen] = useState<boolean>(false);
 
 /* -------------------------------------------------------------------------------------------------
------ setting paramter of Stem Cells ( SVG, foreignObject )----------------------------------------------     
+    ----- Function ---------------------------------------------------------------------------------     
 ---------------------------------------------------------------------------------------------------- */
-    const originX = OriginX;
-    const originY = OriginY;
-    const stemCellRadius = (WidthSvgViewBox/2) / 8;
-    const radiusAxisRotation = (WidthSvgViewBox/2) / 4;
-
-    /* 
-    const stemCellRadius = (WidthSvgViewBox/2) / 4;
-    const radiusAxisRotation = (WidthSvgViewBox/2) / 2;
-    */
-//____________________________________________________________________________________________________
-
-     useEffect(() => {
-        //console.log('useEffect stem cell')
-    },[]); 
-
+ 
+    // Function, open dialog when stem cell is double clicked.
     const handleClickOpen = () => {
         setOpen(true);
     };
 
+    // Function, close dialog when button in the dialog is clicked.
     const handleClose = async () => {
         setOpen(false);
     };
 
+    // Function, update the tilte when event is detected in the textfield 'Title'.
     const handleChangeTitle = (event: any) => {
         event.preventDefault();
         let val: string = event.target.value;
         setTitle(val);
     };
     
+    // Function, update the description when event is detected in the textfield 'Description'.
     const handleChangeDescription = (event:any) => {
         event.preventDefault();
         setDescription(event.target.value);
     };
 
+    // Fuction, set variable updateStemCell when a user leaves an input field (textfield).
     const handleOnBlur = () => {
         setUpdateStemCell({
             _id: stemCellProps._id,
@@ -73,34 +80,30 @@ export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells
         });
     };
     
+    // Function, saves the change in title and description.
     const saveEditing = async (event:any) => {
         event.preventDefault();
-        setUpdateStemCell({
-            _id: stemCellProps._id,
-            title: title,
-            description: description,
-            position: stemCellProps.position,
-            idStemCell: stemCellProps.idStemCell,
-            stemCell: stemCellProps.stemCell
-        });
         const socket = io.connect(ENDPOINT);
         socket.emit('update props cell', updateStemCell, async (data:any) => {
-            //console.log(data); 
-        });
-        await refreshCells()
-        await handleClose();    
+            await refreshCells()
+            await handleClose(); 
+        });    
     };
 
+    // Function, rempves the stem cell and all children associated with that stem cell.
     const deleteCell = async (event:any) => {
         event.preventDefault();
         const socket = io.connect(ENDPOINT);
-        socket.emit('delete cell and all child', stemCellProps, async (data:any) => {
-            //console.log(data); 
+        socket.emit('delete cell and all child', stemCellProps , async (data:any) => {
+            await handleClose(); 
+            await returnPreviousStemCellProps();
         });
-        await handleClose(); 
-        await returnPreviousStemCellProps();
+        
     }
 
+/* ---------------------------------------------------------------------------------------------------
+------------- Render -----------------------------------------------------------------------------    
+------------------------------------------------------------------------------------------------------ */
     return (
         <svg>
             <circle className='stem-cell'
@@ -112,10 +115,10 @@ export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells
                 fill='gray'
             />
             <foreignObject
-                x={originX - 12.5}
-                y={originY - 9}
-                width='25'
-                height='18'
+                x={originX - stemCellRadius}
+                y={originY - stemCellRadius}
+                width={widthTitleField}
+                height={heightTitleField}
                 fontSize='15%' 
                 >
                 <div className='container-stem-cell-title' >

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
 // Component React
-import { StemCells } from '../stemCells/StemCells';
+import { StemCell } from '../stemCell/StemCell';
 import { Cells } from '../cells/Cells';
 import { ButtonAddCell } from '../cells/ButtonAddCell';
 
@@ -25,7 +25,7 @@ const mindMap: MindMap[] = [{
 // _______________________________________________________________________________________
 
 // ---------------------------------------------------------------------------------------
-// Component Mind Map builder. This is the main page for build each mind map. 
+// Mind Map builder component. This is the main page for build each mind map. 
 // ---------------------------------------------------------------------------------------
 export const MindMapBuilder: React.FC = () => {
 
@@ -137,10 +137,10 @@ export const MindMapBuilder: React.FC = () => {
 ------------------------------------------------------------------------------------------------------ */
     
     // Stem cell element. This element is the cell at the center of the mind map.
-    const listStemCells = () => {
+    const listStemCell = () => {
         if (stemCell[0]) {
             return stemCell.map((currentStemCell: StemCell) => { 
-                return <StemCells
+                return <StemCell
                             key={currentStemCell?.position}
                             stemCellProps={currentStemCell}
                             refreshCells={refreshEcosystem}
@@ -202,7 +202,7 @@ export const MindMapBuilder: React.FC = () => {
                     version='1.1' 
                     viewBox={svgViewBoxProps}
                 >
-                    {listStemCells()}
+                    {listStemCell()}
                     {listCells()}
                     {listbuttonAddCell()}
                 </svg>
