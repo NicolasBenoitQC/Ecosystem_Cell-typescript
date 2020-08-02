@@ -1,31 +1,29 @@
-import './Cells.css'
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+// Framwork
+import React from 'react';
 
+// Local file
+import './Cells.css'
 import { WidthSvgViewBox, HeightSvgViewBox } from '../svg-setting'
 
+// Typing of the properties of the cells component.
 export interface CellProps {
-    cell: Cell;
+    cellProps: Cell;
     quantityCells: QuantityCells;
     actionDoubleClick: ActionDoubleClick;
 }
 
-export const Cells: React.FC<CellProps> = ({cell, quantityCells, actionDoubleClick}) => {
+// ---------------------------------------------------------------------------------------
+// Cells component. This element generate the cells around the center cell of the mind map. 
+// ---------------------------------------------------------------------------------------
+export const Cells: React.FC<CellProps> = ({cellProps, quantityCells, actionDoubleClick}) => {
 
-/* -------------------------------------------------------------------------------------------------
------ setting paramter of Cells ( SVG, foreignObject )----------------------------------------------     
----------------------------------------------------------------------------------------------------- */
+    // setting of the template svg.
     const rotationFormula = 2*Math.PI/(quantityCells *2);
     const originX = WidthSvgViewBox / 2;
     const originY = HeightSvgViewBox / 2;
     const radiusAxisRotation = originX / 4;
     const radiusCells = originX / 12;
-    const positionIdCell = cell.position;
-
-    /* 
-    const radiusAxisRotation = originX / 2;
-    const radiusCells = originX / 6;
-    */
+    const positionIdCell = cellProps.position;
 
     const centerOfCellX = originX + ((radiusAxisRotation) * Math.sin(rotationFormula * positionIdCell));
     const centerOfCellY = originY - ((radiusAxisRotation) * Math.cos(rotationFormula * positionIdCell));
@@ -33,17 +31,9 @@ export const Cells: React.FC<CellProps> = ({cell, quantityCells, actionDoubleCli
     const widthTitleField = radiusCells * 2;
     const heightTitleField = radiusCells * 2;
 
-    const pathEditingCell = `/edit/id_cell:${cell._id}/id_stemCell:${cell.idStemCell}`;
-
-    useEffect(() => {
-        //console.log('useEffect cell')
-        //setCellR(cell);
-    },[]);
-
-    /* const click = () => {
-        console.log(cell)
-    } */
-
+/* ---------------------------------------------------------------------------------------------------
+------------- Render -----------------------------------------------------------------------------    
+------------------------------------------------------------------------------------------------------ */
     return (
         <svg>
             <circle className='cells'
@@ -63,11 +53,9 @@ export const Cells: React.FC<CellProps> = ({cell, quantityCells, actionDoubleCli
                 fontSize='10%'
                 >
                 <div className='container-cell-title' >
-                    <Link
-                        to={pathEditingCell}
-                        className='cell-title'>
-                        {cell.title}
-                    </Link>
+                    <div className='cell-title'>
+                        {cellProps.title}
+                    </div>
                 </div>
             </foreignObject>
             <circle className='cellsLayer'
@@ -76,7 +64,7 @@ export const Cells: React.FC<CellProps> = ({cell, quantityCells, actionDoubleCli
                 cy={centerOfCellY}
                 r={radiusCells}
                 fillOpacity='0'
-                onDoubleClick={() => actionDoubleClick(cell)}
+                onDoubleClick={() => actionDoubleClick(cellProps)}
             />
         </svg>
     )

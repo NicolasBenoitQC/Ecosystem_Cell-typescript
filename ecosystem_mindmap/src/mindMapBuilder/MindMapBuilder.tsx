@@ -155,7 +155,7 @@ export const MindMapBuilder: React.FC = () => {
         return cells.map((currentCell: Cell) => {
              return <Cells
                     key={currentCell.position}
-                    cell={currentCell}
+                    cellProps={currentCell}
                     quantityCells={cells.length}
                     actionDoubleClick={doubleClick} 
                 />
