@@ -6,8 +6,8 @@ type MindMap = {_id: string;
 
 type Cell = {
     _id?: string;
-    title: string;
-    description: string;
+    title: string  | undefined;
+    description: string | undefined;
     position: number;
     idStemCell: string;
     stemCell: boolean;

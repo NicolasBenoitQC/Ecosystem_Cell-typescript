@@ -14,10 +14,11 @@ import io from 'socket.io-client';
 
 interface StemCellsProps {
     stemCellProps: StemCell,
-    refreshCells: any
+    refreshCells: any,
+    returnPreviousStemCellProps: any;
 };
 
-export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells}) => {
+export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells, returnPreviousStemCellProps}) => {
     //const [stemCell, setStemCell] = useState(stemCellProps);
     const [updateStemCell, setUpdateStemCell] = useState(stemCellProps);
     const [title, setTitle] = useState(stemCellProps.title);
@@ -93,10 +94,12 @@ export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells
     const deleteCell = async (event:any) => {
         event.preventDefault();
         const socket = io.connect(ENDPOINT);
-        socket.emit('delete cell and all child', stemCellProps._id, stemCellProps.idStemCell, async (data:any) => {
+        socket.emit('delete cell and all child', stemCellProps, async (data:any) => {
             console.log(data); 
         });
-        
+        handleClose(); 
+        //refreshCells();
+        await returnPreviousStemCellProps();
     }
 
     return (

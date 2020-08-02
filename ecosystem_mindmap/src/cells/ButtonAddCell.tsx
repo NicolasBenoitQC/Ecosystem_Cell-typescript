@@ -21,11 +21,12 @@ export interface CellProps {
     noCell: boolean
     cellReferent: Cell
     refreshCells: any
+    parentTreeProps: string[]
 }
 
 export const ButtonAddCell: React.FC<CellProps> = ({
         position, quantityCells, stemCellReferent, 
-        noCell, cellReferent, refreshCells}) => {
+        noCell, cellReferent, refreshCells, parentTreeProps}) => {
     
     const [open, setOpen] = useState<boolean>(false)
     const [cell, setCell] = useState(cellReferent); 
@@ -80,7 +81,7 @@ export const ButtonAddCell: React.FC<CellProps> = ({
         event.preventDefault();
         try {
             const socket = io.connect(ENDPOINT);
-            socket.emit('add cell', cell, (data:any) => {
+            socket.emit('add cell', cell, parentTreeProps, (data:any) => {
                 //console.log(data);
                 setOpen(false);
                 refreshCells()

@@ -81,6 +81,7 @@ export interface IUpdatePropsCellResp {
     cellCreated?: ICell;
 };
 
+
  export interface ICellDocument extends ICellSchema ,Document {
 }; 
 
@@ -88,14 +89,39 @@ export interface ICellModel extends Model<ICellDocument> {
     
 };
 
-export interface ICellHierarchySchema {
-    cell: string;
-    parents: string;
+/* ______________________________________________________________
+---------------- Parents tree of the cell -----------------------
+______________________________________________________________ */
+
+export interface IParentsTreeOfTheCellSchema {
+    cellId: string;
+    levelCell: number;
+    listPatentId: string[];
 };
 
-export interface ICellDocumentHierarchy extends ICellHierarchySchema ,Document {
+export interface IParentsTreeOfTheCell {
+    _id: string;
+    cellId: string;
+    levelCell: number;
+    listPatentId: string[];
 };
 
-export interface ICellHierarchyModel extends Model<ICellDocumentHierarchy> {
-    
+export interface INewParentsTreeOfTheCellResp {
+    request_type: string;
+    error:boolean;
+    message?: string;
+    parents_tree?: IParentsTreeOfTheCell;
+};
+
+export interface IGetAllIdOfChildCellsResp {
+    request_type: string;
+    error:boolean;
+    message?: string;
+    parents_tree?: IParentsTreeOfTheCell[];
+};
+
+export interface IParentsTreeOfTheCellDocument extends IParentsTreeOfTheCellSchema ,Document {
+};
+
+export interface IParentsTreeOfTheCellModel extends Model<IParentsTreeOfTheCellDocument> {
 };

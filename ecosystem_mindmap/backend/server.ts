@@ -40,7 +40,7 @@ io.on('connection', async (socket) => {
         async (stemCell_id: string, parentIsMindMap: boolean, fn) => {
             const ecosystem = await getEcoSystemByStemCellId(stemCell_id, parentIsMindMap);
             await fn(ecosystem);
-            console.log(ecosystem)
+            //console.log(ecosystem)
         }
     )
 
@@ -49,7 +49,7 @@ io.on('connection', async (socket) => {
         async (stemCell_id: string, fn) => {
             const child = await getChildCellsByStemCellId(stemCell_id);
             await fn(child);
-            console.log(child)
+            //console.log(child)
         }
     )
 
@@ -74,43 +74,19 @@ io.on('connection', async (socket) => {
             const defaultStemCell = await createDefaultStemCell(stemCellId);  
             await fn(defaultStemCell);
             
-            console.log(defaultStemCell);
+            //console.log(defaultStemCell);
         }
     );
 
-    /* socket.on('create first cell of the stem cell', 
-        async (stemCellReferent: ICell[], fn) => {
-            const newCell = await createFirstCell (stemCellReferent[0]._id);
-            await fn(newCell);
-            
-            socket.broadcast.emit('first cell of the mindmap created', 
-                'return first cell');
-
-            //console.log(newCell);
-        }
-    ); */
-
-    /* socket.on('add cell in this position', 
-        async (positionOfNewCell:number, stemCellReferent:ICell[], fn) => {
-            const newCell = await addCellInThisPosition(positionOfNewCell, stemCellReferent[0]._id);
-            await fn(newCell);
-            
-            socket.broadcast.emit('cell added to a specific position', 
-                await fn(newCell));
-
-            //console.log(newCell)
-        }
-    ); */
-
     socket.on('add cell', 
-        async (cell:ICell, fn) => {
-            const newCell = await addCell(cell);
+        async (cell:ICell, parentTree: string[], fn) => {
+            const newCell = await addCell(cell, parentTree);
             await fn(newCell);
             
             socket.broadcast.emit('cell added', 
                 'one cell added!')
 
-            console.log(newCell)
+            //console.log(newCell)
         }
         
     );
@@ -120,7 +96,7 @@ io.on('connection', async (socket) => {
             const cell = await getCellById(idCell);
             await fn(cell);
         
-            console.log(cell);
+            //console.log(cell);
         }
     );
 
@@ -130,7 +106,7 @@ io.on('connection', async (socket) => {
             
             const updatePropsCell =  await updatePropsCellById(cellUpdated);
             fn(updatePropsCell);
-            console.log(updatePropsCell);
+            //console.log(updatePropsCell);
         
             socket.broadcast.emit('cell has updated', 
                 'one cell has updated!')
@@ -149,10 +125,10 @@ io.on('connection', async (socket) => {
     );
 
     socket.on('delete cell and all child', 
-        async (cell_id: string, stemCell_id : string, fn) => {
-            const deleteCells = await deleteCellAndAllChilds(cell_id, stemCell_id);
+        async (cell: ICell, fn) => {
+            const deleteCells = await deleteCellAndAllChilds(cell._id, cell.idStemCell);
             fn(deleteCells);
-            console.log(deleteCells)
+            //console.log(deleteCells)
 
         }
     );

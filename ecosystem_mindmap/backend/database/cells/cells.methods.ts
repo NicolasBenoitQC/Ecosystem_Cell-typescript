@@ -1,9 +1,10 @@
-import { CellModel, CellHierarchyModel } from './cells.model';
+import { CellModel, ParentsTreeOfTheCellModel } from './cells.model';
 import { ICell,
      IgetChildCellsByStemCellId,
         IgetStemCell, IgetEcoSystemByStemCellId, 
         IGetStemCellResp, IGetCellsByStemCellResp, IGetCellByIdResp, 
-        INewCell, IUpdatePropsCellResp, 
+        INewCell, IUpdatePropsCellResp, INewParentsTreeOfTheCellResp,
+        IGetAllIdOfChildCellsResp,
      } from './cells.types';
 
 /* ------------------------------------------------------------
@@ -74,6 +75,56 @@ export async function getChildCellsByStemCellId (stemCellId: string): Promise<Ig
                                  'message': error
                                 }})
     return cells_Request;
+};
+
+export async function newParentsTreeOfTheCell (parentsArray: string[], cell_id: string): Promise<INewParentsTreeOfTheCellResp> {
+    const requestType = 'create new parents tree of the cell.'; 
+    const newParentsTreeOfTheCell = new ParentsTreeOfTheCellModel({
+        cellId: cell_id,
+        cellLevel: parentsArray.length,
+        parentsIdList: parentsArray,
+    });
+    const parentsTreeOfTheCellCreated = await newParentsTreeOfTheCell.save()
+            .then(newParentsTreeCreated => {return {
+                request_type: requestType,
+                error: false,
+                parents_tree: newParentsTreeCreated,
+            }})
+            .catch(error => {return {
+                request_type: requestType,
+                error: true,
+                message: error,
+            }});
+    return parentsTreeOfTheCellCreated;
+};
+
+export async function getAllIdOfChildCells (parentCellId: string): Promise<IGetAllIdOfChildCellsResp> {
+    const requestType = 'get all id of childs Cells.'
+    const childsIdList = await ParentsTreeOfTheCellModel.find({parentsIdList: parentCellId})
+            .then(getChildsCells => {return {
+                request_type: requestType,
+                error: false,
+                parents_tree: getChildsCells,
+            }})
+            .catch(error => {return {
+                request_type: requestType,
+                error: true,
+                message: error,
+            }});
+    return childsIdList;
+};
+
+export async function deleteChildOfTheCell (cellId: string) {
+    const childsIdList = await getAllIdOfChildCells(cellId);
+    
+    childsIdList.parents_tree?.map(async currentId => {
+        await ParentsTreeOfTheCellModel.findByIdAndDelete(currentId._id)
+            .then(() => { console.log('childs with stem cell in the parent tree deleted : ' + currentId._id)})
+            .catch(error => { console.log(error) });
+        await CellModel.findByIdAndDelete(currentId.cellId)
+            .then(() => { console.log('cell childs deleted : ' + currentId.cellId)})
+            .catch(error => { console.log(error) });
+    });
 };
 
 /* __________________________________________________________ */
@@ -213,7 +264,7 @@ export async function addCellInThisPosition (positionOfNewCell: number, stemCell
     return addCell;
 };
 
-export async function addCell (cell: ICell): Promise<INewCell> {
+export async function addCell (cell: ICell, parentTree: string[]): Promise<INewCell> {
     const cells: IGetCellsByStemCellResp = await getCellsByStemCell(cell.idStemCell);
     const newQteCell: number = cells.cells.length*2;
 
@@ -231,6 +282,11 @@ export async function addCell (cell: ICell): Promise<INewCell> {
         cell.idStemCell,
         false
     );
+
+    const addParentTree = await newParentsTreeOfTheCell(parentTree, addCell.cellCreated._id);
+    console.log(addParentTree)
+
+    
     
     return addCell;
 };
@@ -271,32 +327,20 @@ export async function deleteCellById (cell_id: string, stemCell_id: string): Pro
 };
 
 export async function deleteCellAndAllChilds (cell_id: string, stemCell_id: string) {
-    const listCellsDeleted:any = [];
-    
-
-    const listChilds: any = async () => {
-        await CellModel.find({idStemCell: cell_id})
-        .then(listChildsRq => {
-            return listChildsRq
-        
-        
-        })
-        .catch(error => console.log(error));
-        
-    }
-    
-    await listChilds.map((currentCell:any) => {
-        listCellsDeleted.unshift(currentCell);
-    });
-
-    return listCellsDeleted;
-}
-
-
-
-
-
-export async function addCellHierarchy () {
+    const cells: IGetCellsByStemCellResp = await getCellsByStemCell(stemCell_id);
+    const cellToBeDelete = await getCellById(cell_id);
+    const positionCellToBeDelete:number = await cellToBeDelete.cell[0].position;
+    const qteCell: number = cells.cells.length*2;
    
-    
+    for(let counter = positionCellToBeDelete; counter <= qteCell; counter+=2) {
+        const object = await CellModel.find({position: counter, idStemCell: stemCell_id});
+      
+        await CellModel.findOneAndUpdate({_id: object[0]._id}, {position: counter - 2})
+            .then(() => console.log('cell updated! : ' + object[0]._id))
+            .catch(error => console.log('Error update cell : ' + error))
+    };
+    await CellModel.findByIdAndDelete(cellToBeDelete.cell[0]._id); 
+    const parentTreeToBeDelete = await ParentsTreeOfTheCellModel.find({cellId:cellToBeDelete.cell[0]._id});
+    await ParentsTreeOfTheCellModel.findByIdAndDelete(parentTreeToBeDelete[0]._id);
+    await deleteChildOfTheCell(cell_id);
 }

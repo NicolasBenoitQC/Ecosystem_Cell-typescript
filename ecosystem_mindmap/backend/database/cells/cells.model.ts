@@ -1,7 +1,7 @@
 import * as Mongoose from 'mongoose';
 import CellSchema from './cells.schema';
-import CellHierarchySchema from './cellHierarchy.shema';
-import { ICellModel, ICellHierarchyModel } from './cells.types';
+import ParentsTreeOfTheCellSchema from './parentsTreeOfTheCell.Schema';
+import { ICellModel, IParentsTreeOfTheCellModel } from './cells.types';
 
 export const CellModel = Mongoose.model(
     "Cell_data",
@@ -13,7 +13,7 @@ export const TestCellModel = Mongoose.model(
     CellSchema
 ) as ICellModel;
 
-export const CellHierarchyModel = Mongoose.model(
+export const ParentsTreeOfTheCellModel = Mongoose.model(
     "Cell_hierarchy",
-    CellHierarchySchema
-) as ICellHierarchyModel;
+    ParentsTreeOfTheCellSchema
+) as IParentsTreeOfTheCellModel;

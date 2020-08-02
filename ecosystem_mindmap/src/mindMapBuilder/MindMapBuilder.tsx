@@ -12,7 +12,7 @@ const mindMap: MindMap[] = [{
     title: 'Mind map DEV',
     description: 'This is the mindmap DEV for build the code',
     active: true,
-}]
+}];
 
 export const MindMapBuilder: React.FC = () => {
 
@@ -20,7 +20,7 @@ export const MindMapBuilder: React.FC = () => {
     const [heightSvgViewBox] = useState(HeightSvgViewBox);
     const [svgViewBoxProps] = useState(`0 0 ${widthSvgViewBox} ${heightSvgViewBox}`);
     
-    const [mainStemCellId] = useState(mindMap[0]._id)
+    const [mainStemCellId] = useState(mindMap[0]._id);
     const [cells, setCells] = useState<Cell[]>([]);
     const [stemCell, setStemCell] = useState<StemCell[]>([]);
     const [refresh, setRefresh] = useState<number>(1);
@@ -33,12 +33,11 @@ export const MindMapBuilder: React.FC = () => {
 
     useEffect(()=>{
         getEcosystem('refresh');
-    },[refresh])
+    },[refresh]);
 
     useEffect(()=>{
-        getEcosystem('refreshCells');
-        
-    },[refreshCells])
+        getEcosystem('refreshCells');    
+    },[refreshCells]);
 
 
 /* -------------------------------------------------------------------------------------------------
@@ -60,11 +59,11 @@ export const MindMapBuilder: React.FC = () => {
                             console.log('mind map empty create default stem cell');
                             console.log({'Create default stem Cell.': data, 'id': idRef});
                             setStemCell([data.cellCreated]);
-                            setParentGenealogy([data.cellCreated.title]);
+                            setParentGenealogy([data.cellCreated._id]);
                         });
                     } else {
                             setStemCell(data.stemCellOfEcosystem.stemCell_Request);
-                            setParentGenealogy([data.stemCellOfEcosystem.stemCell_Request[0].title]);
+                            setParentGenealogy([data.stemCellOfEcosystem.stemCell_Request[0]._id]);
                             setCells(data.cellsOfEcosystem.cells_Request);
                     }; 
                 });
@@ -72,10 +71,8 @@ export const MindMapBuilder: React.FC = () => {
                 if (stemCell[0]) {
                     socket.emit('get ecosystem', stemCell[0]?._id, false , async (data:any) => {
                         setStemCell(data.stemCellOfEcosystem.stemCell_Request);
-                        //setParentGenealogy([data.cellsOfEcosystem.cells_Request[0].title]);
+                        //setParentGenealogy([data.cellsOfEcosystem.cells_Request[0]._id]);
                         setCells(data.cellsOfEcosystem.cells_Request);
-                        
-                        //console.log({'REFRESH : data request get ecosystem.': data});
                     });
                 } else {
                     console.log('not refresh')
@@ -106,39 +103,35 @@ export const MindMapBuilder: React.FC = () => {
         setRefreshCells(refreshCells+1);
     };
 
-
-
     const doubleClick:any = async (cell:StemCell) => {
         const socket = io.connect(ENDPOINT);
         socket.emit('get cell by _id', cell._id, (data:any) => {
             setStemCell(data.cell);
-            addParentGenealogy(cell.title);
+            addParentGenealogy(cell._id);
             refreshEcosystem();
         })
-
     };
 
-    const returnPreviousStemCell = () => {
+    const returnPreviousStemCell = async () => {
         if (stemCell[0].idStemCell === mindMap[0]._id) {
             return;
         } else {
             const socket = io.connect(ENDPOINT);
-            socket.emit('get cell by _id', stemCell[0].idStemCell, (data:any) => {
+            socket.emit('get cell by _id', stemCell[0].idStemCell, async (data:any) => {
                 setStemCell(data.cell);
                 removeParentGenealogy();
                 refreshEcosystem();
-            })
+            }) 
         }
     }
 
-    const addParentGenealogy = (title:string) => {
-        parentGenealogy.unshift(title);
-        console.log(parentGenealogy);
-        
+    const addParentGenealogy = (id:string) => {
+        parentGenealogy.push(id);
+        console.log(parentGenealogy);       
     };
 
     const removeParentGenealogy = () => {
-        parentGenealogy.shift()
+        parentGenealogy.pop()
         console.log(parentGenealogy);
     };
 
@@ -152,6 +145,7 @@ export const MindMapBuilder: React.FC = () => {
                             key={currentStemCell?.position}
                             stemCellProps={currentStemCell}
                             refreshCells={refreshEcosystem}
+                            returnPreviousStemCellProps={returnPreviousStemCell}
                         />
             });
         }; 
@@ -178,6 +172,7 @@ export const MindMapBuilder: React.FC = () => {
                 noCell={true}
                 cellReferent={cells[0]}
                 refreshCells={refreshEcosystem}
+                parentTreeProps={parentGenealogy}
             />
         } else {
             return cells.map((currentCell: Cell) => {
@@ -189,6 +184,7 @@ export const MindMapBuilder: React.FC = () => {
                         noCell={false}
                         cellReferent= {currentCell}
                         refreshCells={refreshEcosystem}
+                        parentTreeProps={parentGenealogy}
                     />
             });
         };
@@ -200,11 +196,10 @@ export const MindMapBuilder: React.FC = () => {
             console.log(check)
         } else {
             console.log('title not found')
-        }
+        };
     }
 
     const resetModel = async () => {
-
         const socket = io.connect(ENDPOINT);
         socket.emit('RESET', );
         setTimeout(function() {window.location.href = '/'}, 500);
@@ -236,7 +231,7 @@ export const MindMapBuilder: React.FC = () => {
                 </button>
                 <br/>
                 <button onClick={check}>
-                CHECK
+                    CHECK
                 </button>
             </div>
         </div>
