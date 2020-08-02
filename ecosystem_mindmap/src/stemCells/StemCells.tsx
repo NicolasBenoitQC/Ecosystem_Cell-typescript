@@ -47,7 +47,7 @@ export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells
         setOpen(true);
     };
 
-    const handleClose = () => {
+    const handleClose = async () => {
         setOpen(false);
     };
 
@@ -85,20 +85,19 @@ export const StemCells: React.FC<StemCellsProps> = ({stemCellProps, refreshCells
         });
         const socket = io.connect(ENDPOINT);
         socket.emit('update props cell', updateStemCell, async (data:any) => {
-            console.log(data); 
+            //console.log(data); 
         });
-        refreshCells()
-        handleClose();    
+        await refreshCells()
+        await handleClose();    
     };
 
     const deleteCell = async (event:any) => {
         event.preventDefault();
         const socket = io.connect(ENDPOINT);
         socket.emit('delete cell and all child', stemCellProps, async (data:any) => {
-            console.log(data); 
+            //console.log(data); 
         });
-        handleClose(); 
-        //refreshCells();
+        await handleClose(); 
         await returnPreviousStemCellProps();
     }
 

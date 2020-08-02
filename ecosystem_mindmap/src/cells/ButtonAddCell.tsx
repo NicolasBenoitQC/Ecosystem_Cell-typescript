@@ -30,7 +30,6 @@ export const ButtonAddCell: React.FC<CellProps> = ({
     const [open, setOpen] = useState<boolean>(false);
     let titleHandle: string;
     let descriptionHandle: string;
-    //const [cell, setCell] = useState(cellReferent); 
     const myRef = React.createRef();
 /* -------------------------------------------------------------------------------------------------
 ----- setting paramter of Cells ( SVG, foreignObject )----------------------------------------------     
@@ -49,18 +48,6 @@ export const ButtonAddCell: React.FC<CellProps> = ({
 
     const handleClickOpen= () => {
         setOpen(true);
- /*         if (noCell === true) {
-            const firstCell: Cell = { 
-                title: "", 
-                description: "", 
-                position: 2,
-                idStemCell: stemCellReferent[0]._id,
-                stemCell: false
-            }
-            setCell(firstCell)
-        } else { 
-            return
-        };  */
     };
 
     const handleClose = () => {
@@ -92,11 +79,6 @@ export const ButtonAddCell: React.FC<CellProps> = ({
                 socket.emit('add cell', firstCell, parentTreeProps, (data:any) => {
                     setOpen(false);
                     refreshCells()
-                    console.log({
-                        type : 'FIRST CELL save Editing',
-                        cellIo : firstCell,
-                        parentTree: parentTreeProps
-                    });
                 });
             } else {
                 const cell: Cell = { 
@@ -109,11 +91,6 @@ export const ButtonAddCell: React.FC<CellProps> = ({
                 socket.emit('add cell', cell, parentTreeProps, (data:any) => {
                     setOpen(false);
                     refreshCells()
-                    console.log({
-                        type : 'CELL save Editing',
-                        cellIo : cell,
-                        parentTree: parentTreeProps
-                    });
                 });
             }; 
         } catch (error) {
