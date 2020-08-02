@@ -25,7 +25,9 @@ interface StemCellProps {
 // ---------------------------------------------------------------------------------------
 // Stem cell component. This element generate the cell in the center of the mind map. 
 // ---------------------------------------------------------------------------------------
-export const StemCell: React.FC<StemCellProps> = ({stemCellProps, refreshCells, returnPreviousStemCellProps}) => {
+export const StemCell: React.FC<StemCellProps> = ({
+                stemCellProps, refreshCells, returnPreviousStemCellProps,
+    }) => {
 
     // setting of the stem cell.
     const originX = OriginX;

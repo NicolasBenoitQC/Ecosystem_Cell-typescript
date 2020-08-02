@@ -15,7 +15,9 @@ export interface CellProps {
 // ---------------------------------------------------------------------------------------
 // Cells component. This element generate the cells around the center cell of the mind map. 
 // ---------------------------------------------------------------------------------------
-export const Cells: React.FC<CellProps> = ({cellProps, quantityCells, actionDoubleClick}) => {
+export const Cells: React.FC<CellProps> = ({
+                cellProps, quantityCells, actionDoubleClick,
+    }) => {
 
     // setting of the template svg.
     const rotationFormula = 2*Math.PI/(quantityCells *2);

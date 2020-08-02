@@ -1,11 +1,9 @@
-import './Cells.css'
+// Framwork
 import React, { useEffect, useState } from 'react';
-import { ENDPOINT } from '../localhost'; 
 import io from 'socket.io-client';
 
+// Framwork material-ui
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { WidthSvgViewBox, HeightSvgViewBox } from '../svg-setting'
-
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -13,27 +11,31 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+// Local file
+import './Cells.css'
+import { ENDPOINT } from '../localhost'; 
+import { WidthSvgViewBox, HeightSvgViewBox } from '../svg-setting'
+
+// Typing of the properties of the button add cell.
 export interface CellProps {
     position: number
     quantityCells: QuantityCells;
-    stemCellReferent: StemCell[];
+    stemCellProps: StemCell[];
     noCell: boolean
-    cellReferent: Cell
+    cellProps: Cell
     refreshCells: any
     parentTreeProps: string[]
 }
 
+// ---------------------------------------------------------------------------------------
+// Button add cell component. These elements are the buttons + between the cells. 
+// ---------------------------------------------------------------------------------------
 export const ButtonAddCell: React.FC<CellProps> = ({
-        position, quantityCells, stemCellReferent, 
-        noCell, cellReferent, refreshCells, parentTreeProps}) => {
+                position, quantityCells, stemCellProps, 
+                noCell, cellProps, refreshCells, parentTreeProps,
+    }) => {
     
-    const [open, setOpen] = useState<boolean>(false);
-    let titleHandle: string;
-    let descriptionHandle: string;
-    const myRef = React.createRef();
-/* -------------------------------------------------------------------------------------------------
------ setting paramter of Cells ( SVG, foreignObject )----------------------------------------------     
----------------------------------------------------------------------------------------------------- */
+    // setting of the stem cell.
     const rotationFormula = 2*Math.PI/(quantityCells *2);
     const originX = WidthSvgViewBox / 2;
     const originY = HeightSvgViewBox / 2;
@@ -43,62 +45,69 @@ export const ButtonAddCell: React.FC<CellProps> = ({
     const centerOfAddX = originX + ((radiusAxisRotation) * Math.sin(rotationFormula * positionIdAddCell));
     const centerOfAddY = originY - ((radiusAxisRotation) * Math.cos(rotationFormula * positionIdAddCell));
 
-    useEffect(() => {
-    });
+    // State variable.
+    const [createCell, setCreateCell] = useState<object>();
+    const [title, setTitle] = useState<string>('');
+    const [description, setDescription] = useState<string>('');
+    const [dialogState, setDialogState] = useState<boolean>(false);
 
+    // Function, open dialog when stem cell is double clicked.
     const handleClickOpen= () => {
-        setOpen(true);
+        setDialogState(true);
     };
 
+    // Function, close dialog when button in the dialog is clicked.
     const handleClose = () => {
-        setOpen(false);
+        setDialogState(false);
     };
 
+    // Function, update the tilte when event is detected in the textfield 'Title'.
     const handleChangeTitle = (event:any) => {
         event.preventDefault();
-        titleHandle = event.target.value;
+        let val: string = event.target.value;
+        setTitle(val);
     };
 
+    // Function, update the description when event is detected in the textfield 'Description'.
     const handleChangeDescription = (event:any) => {
         event.preventDefault();
-        descriptionHandle = event.target.value;
+        setDescription(event.target.value);
     };
 
-    const saveEditing = async (event:any) => {
+    // Fuction, set variable createCell when a user leaves an input field (textfield).
+    const handleOnBlur = () => {
+        if (noCell === true) {
+            setCreateCell({ 
+                   title: title, 
+                   description: description, 
+                   position: 2,
+                   idStemCell: stemCellProps[0]._id,
+                   stemCell: false
+               });
+       } else {
+            setCreateCell({ 
+                title: title, 
+                description: description, 
+                position: cellProps.position,
+                idStemCell: cellProps.idStemCell,
+                stemCell: cellProps.stemCell,
+            });
+       };
+    };
+
+    // Function, create new cell.
+    const createNewCell = async (event:any) => {
         event.preventDefault();
         const socket = io.connect(ENDPOINT);
-        try {
-             if (noCell === true) {
-                 const firstCell: Cell = { 
-                        title: titleHandle, 
-                        description: descriptionHandle, 
-                        position: 2,
-                        idStemCell: stemCellReferent[0]._id,
-                        stemCell: false
-                    };
-                socket.emit('add cell', firstCell, parentTreeProps, (data:any) => {
-                    setOpen(false);
-                    refreshCells()
-                });
-            } else {
-                const cell: Cell = { 
-                    title: titleHandle, 
-                    description: descriptionHandle, 
-                    position: cellReferent.position,
-                    idStemCell: cellReferent.idStemCell,
-                    stemCell: cellReferent.stemCell,
-                };
-                socket.emit('add cell', cell, parentTreeProps, (data:any) => {
-                    setOpen(false);
-                    refreshCells()
-                });
-            }; 
-        } catch (error) {
-            console.log(error)
-        };
-
+        socket.emit('add cell', createCell, parentTreeProps, (data:any) => {
+            setDialogState(false);
+            refreshCells()
+        });
     };
 
+/* ---------------------------------------------------------------------------------------------------
+------------- Render -----------------------------------------------------------------------------    
+------------------------------------------------------------------------------------------------------ */
     return (
             <svg>
                 <foreignObject
@@ -120,40 +129,43 @@ export const ButtonAddCell: React.FC<CellProps> = ({
                                 justifyContent: 'center',
                               }}
                     />
-                    </foreignObject>
-                  
+                </foreignObject>
                 <div>
-                    <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title"
-                    fullWidth={true} maxWidth={'md'} ref={myRef}
+                    <Dialog open={dialogState} onClose={handleClose} aria-labelledby="form-dialog-title"
+                    fullWidth={true} maxWidth={'md'} 
                     >
                         <DialogTitle id="form-dialog-title">Create cell</DialogTitle>
-                        <DialogContent>
-                            <TextField
-                            id='filled-basic'
-                            label='Title'
-                            onChange={handleChangeTitle}
-                            InputLabelProps={{shrink: true}}
-                            autoFocus={true}
-                        />
-                        <br/>
-                        <TextField
-                            id='filled-basic'
-                            label='Description'                 
-                            onChange={handleChangeDescription}        
-                            fullWidth
-                            multiline
-                            margin='normal'
-                            rowsMax='23'
-                            InputLabelProps={{shrink: true}}
-                        />
-                        <br />
+                        <DialogContent >
+                            <form>
+                                <TextField
+                                    id='filled-basic'
+                                    label='Title'
+                                    onChange={handleChangeTitle}
+                                    InputLabelProps={{shrink: true}}
+                                    onBlur={handleOnBlur}
+                                    autoFocus={true}
+                                />
+                                <br/>
+                                <TextField
+                                    id='filled-basic'
+                                    label='Description'                 
+                                    onChange={handleChangeDescription}        
+                                    InputLabelProps={{shrink: true}}
+                                    onBlur={handleOnBlur}
+                                    fullWidth
+                                    multiline
+                                    margin='normal'
+                                    rowsMax='23'
+                                />
+                                <br />
+                            </form>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose} color="primary">
                                 Cancel
                             </Button>
-                            <Button onClick={saveEditing} color="primary">
-                                Save
+                            <Button onClick={createNewCell} color="primary">
+                                Create new cell
                             </Button>
                         </DialogActions>
                     </Dialog>

@@ -162,16 +162,16 @@ export const MindMapBuilder: React.FC = () => {
         }); 
     };
 
-    // Buttons add elements. These element are the button + between the cells.
+    // Buttons add elements. These elements are the buttons + between the cells.
     const listbuttonAddCell = () => {
         if (cells.length === 0) {
             return <ButtonAddCell
                 key={1}
                 position={2}
                 quantityCells={cells.length+2}
-                stemCellReferent={stemCell}
+                stemCellProps={stemCell}
                 noCell={true}
-                cellReferent={cells[0]}
+                cellProps={cells[0]}
                 refreshCells={refreshEcosystem}
                 parentTreeProps={parentTree}
             />
@@ -181,9 +181,9 @@ export const MindMapBuilder: React.FC = () => {
                         key={currentCell.position}
                         position={currentCell.position}
                         quantityCells={cells.length}
-                        stemCellReferent={stemCell}
+                        stemCellProps={stemCell}
                         noCell={false}
-                        cellReferent= {currentCell}
+                        cellProps= {currentCell}
                         refreshCells={refreshEcosystem}
                         parentTreeProps={parentTree}
                     />
