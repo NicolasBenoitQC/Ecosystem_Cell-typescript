@@ -2,7 +2,7 @@ import express from 'express';
 import { Connect } from './database/database';
 import http from 'http';
 import socketio from 'socket.io';
-import { getEcoSystemByStemCellId, getCellById, createDefaultStemCell,
+import { getEcoSystemByStemCellId, getCellByProps_Id, createDefaultStemCell,
         addCell, updatePropsCellById, deleteCellAndAllChilds,
          } from './database/cells/cells.methods';
 import { ICell} from './database/cells/cells.types';
@@ -27,13 +27,15 @@ io.on('connection', async (socket) => {
             const ecosystem = await getEcoSystemByStemCellId(stemCell_id, parentIsMindMap);
             await fn(ecosystem);
 
-            //console.log(ecosystem)
+            console.log(parentIsMindMap)
+            console.log(ecosystem.stemCellOfEcosystem)
+            
         }
     );
 
     socket.on('get cell by _id', 
         async (idCell: string, fn) => {
-            const cell = await getCellById(idCell);
+            const cell = await getCellByProps_Id(idCell);
             await fn(cell);
         
             //console.log(cell);

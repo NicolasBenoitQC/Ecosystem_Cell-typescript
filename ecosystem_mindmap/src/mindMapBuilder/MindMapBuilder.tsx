@@ -42,12 +42,12 @@ export const MindMapBuilder: React.FC = () => {
     const [parentTree, setParentTree] = useState<any[]>([]);
     
     // Effect during the first connection.
-    useEffect( ():void => {
+    useEffect( () => {
         getEcosystemToFirstConnection();
     },[]);
 
     // Effect to actualize cells.
-    useEffect(():void => {
+    useEffect(() => {
         getEcosystemToActualize();
     },[refresh]);
 
@@ -55,18 +55,19 @@ export const MindMapBuilder: React.FC = () => {
     ----- Function ---------------------------------------------------------------------------------     
 ---------------------------------------------------------------------------------------------------- */
     // Function, generate the ecosystem of cells of the selected mind map during the first connection.
-    const getEcosystemToFirstConnection =  ():void => {
+    const getEcosystemToFirstConnection =  () => {
+        console.log(refresh)
         try {
             const socket = io.connect(ENDPOINT);
                 socket.emit('get ecosystem', mainStemCellId, true , (data:any) => {
-                    if (data.stemCellOfEcosystem.stemCell_Request.length === 0) {
+                    if (data.stemCellOfEcosystem.cells_Request.length === 0) {
                         socket.emit('create default stem cell', mainStemCellId, (data: any) => {
-                            setStemCell([data.cellCreated]);
-                            setParentTree([data.cellCreated._id]);
+                            setStemCell([data.cell_created]);
+                            setParentTree([data.cell_created._id]);
                         });
                     } else {
-                            setStemCell(data.stemCellOfEcosystem.stemCell_Request);
-                            setParentTree([data.stemCellOfEcosystem.stemCell_Request[0]._id]);
+                            setStemCell(data.stemCellOfEcosystem.cells_Request);
+                            setParentTree([data.stemCellOfEcosystem.cells_Request[0]._id]);
                             setCells(data.cellsOfEcosystem.cells_Request);
                     };
                 });
@@ -80,20 +81,24 @@ export const MindMapBuilder: React.FC = () => {
     };
 
     // Function, refresh the ecosystem of cells to actualize the mind map.
-    const getEcosystemToActualize = ():void => {
-        try {
-            const socket = io.connect(ENDPOINT);
-                socket.emit('get ecosystem', stemCell[0]._id, false ,  (data:any) => {
-                    setStemCell(data.stemCellOfEcosystem.stemCell_Request);
-                    setCells(data.cellsOfEcosystem.cells_Request);
+    const getEcosystemToActualize = () => {
+        if(refresh > 1) {
+            try {
+                const socket = io.connect(ENDPOINT);
+                    socket.emit('get ecosystem', stemCell[0]?._id, false ,  (data:any) => {
+                        setStemCell(data.stemCellOfEcosystem.cell_Request);
+                        setCells(data.cellsOfEcosystem.cells_Request);
+                        console.log(data.stemCellOfEcosystem)
+                    });
+            } catch (error) {
+                console.log({
+                    request_type: 'function get ecosystem to Actualize. TRY / CATCH',
+                    error: true,
+                    message: error,
                 });
-        } catch (error) {
-            console.log({
-                request_type: 'function get ecosystem to Actualize. TRY / CATCH',
-                error: true,
-                message: error,
-            });
-        };
+            };
+        }
+        
     };
 
     // Function, modify the variable 'refresh' to active the useEffect and refresh the cells.
@@ -115,7 +120,7 @@ export const MindMapBuilder: React.FC = () => {
         } else {
             const socket = io.connect(ENDPOINT);
             socket.emit('get cell by _id', stemCell[0].idStemCell,  (data:any) => {
-                setStemCell(data.cell);
+                setStemCell(data.cell_Request);
                 removeStemCellToParentTree();
                 refreshEcosystem();
             }) 

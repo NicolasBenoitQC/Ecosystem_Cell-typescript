@@ -17,19 +17,26 @@ export interface ICell {
     stemCell: boolean;
 };
 
-export interface IgetStemCellByTheMindMapIdRes {
-    "request type": string;
+export interface INewCell {
+    request_type: string;
     error:boolean;
-    message?: any;
-    stemCell_Request?: ICell;
+    message?: string;
+    cell_created?: ICell;
 };
 
-export interface IgetStemCell {
-    "request type": string;
+export interface IGetCells {
+    request_type: string;
     error:boolean;
     message?: any;
-    stemCell_Request?: ICell[];
+    cells_Request?: ICell[];
 };
+
+export interface IGetCellByPropsId {
+    request_type: string;
+    error:boolean;
+    message?: string;
+    cell_Request?: ICell[];
+}
 
 export interface IgetChildCellsByStemCellId {
     "request type": string;
@@ -39,54 +46,24 @@ export interface IgetChildCellsByStemCellId {
 };
 
 export interface IgetEcoSystemByStemCellId {
-    "request type": string;
+    request_type: string;
     error:boolean;
     message?: any;
-    stemCellOfEcosystem?: IgetStemCell;
-    cellsOfEcosystem?: IgetChildCellsByStemCellId;
-};
-
-export interface IGetStemCellResp {
-    "request type": string;
-    error:boolean;
-    message?: any;
-    stemCell?: ICell[];
-};
-
-export interface IGetCellsByStemCellResp {
-    "request type": string;
-    error:boolean;
-    message?: string;
-    cells?: ICell[];
-};
-
-export interface IGetCellByIdResp {
-    "request type": string;
-    error:boolean;
-    message?: string;
-    cell?: ICell[];
-}
-
-export interface INewCell {
-    "request type": string;
-    error:boolean;
-    message?: string;
-    cellCreated?: ICell;
+    stemCellOfEcosystem?: IGetCells;
+    cellsOfEcosystem?: IGetCells;
 };
 
 export interface IUpdatePropsCellResp {
-    "request type": string;
+    request_type: string;
     error:boolean;
     message?: string;
-    cellCreated?: ICell;
+    update_Cell?: ICell;
 };
-
 
  export interface ICellDocument extends ICellSchema ,Document {
 }; 
 
-export interface ICellModel extends Model<ICellDocument> {
-    
+export interface ICellModel extends Model<ICellDocument> {   
 };
 
 /* ______________________________________________________________
