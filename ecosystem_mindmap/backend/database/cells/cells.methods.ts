@@ -307,9 +307,9 @@ export async function deleteCellAndAllChilds (cell_id: string, stemCell_id: stri
     
     const cells: IGetCells = await getCellsByPropsIdStemCell(stemCell_id);
 
-    const cellToBeDelete: IGetCells = await getCellByProps_Id(cell_id);
+    const cellToBeDelete: IGetCellByPropsId = await getCellByProps_Id(cell_id);
 
-    const positionCellToBeDelete:number = cellToBeDelete.cells_Request[0].position;
+    const positionCellToBeDelete:number = cellToBeDelete.cell_Request[0].position;
 
     const qteCell: number = cells.cells_Request.length*2;
 
@@ -325,9 +325,9 @@ export async function deleteCellAndAllChilds (cell_id: string, stemCell_id: stri
                 }))
     };
 
-    await CellModel.findByIdAndDelete(cellToBeDelete.cells_Request[0]._id);
+    await CellModel.findByIdAndDelete(cellToBeDelete.cell_Request[0]._id);
 
-    const parentTreeToBeDelete = await ParentsTreeOfTheCellModel.find({cellId:cellToBeDelete.cells_Request[0]._id});
+    const parentTreeToBeDelete = await ParentsTreeOfTheCellModel.find({cellId:cellToBeDelete.cell_Request[0]._id});
     await ParentsTreeOfTheCellModel.findByIdAndDelete(parentTreeToBeDelete[0]._id);
     
     await deleteChildOfTheCell(cell_id);

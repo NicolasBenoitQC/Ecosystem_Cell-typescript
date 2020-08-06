@@ -27,9 +27,7 @@ io.on('connection', async (socket) => {
             const ecosystem = await getEcoSystemByStemCellId(stemCell_id, parentIsMindMap);
             await fn(ecosystem);
 
-            console.log(parentIsMindMap)
-            console.log(ecosystem.stemCellOfEcosystem)
-            
+            //console.log(ecosystem)
         }
     );
 

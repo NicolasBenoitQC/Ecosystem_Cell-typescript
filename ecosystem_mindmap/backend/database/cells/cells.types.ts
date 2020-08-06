@@ -38,13 +38,6 @@ export interface IGetCellByPropsId {
     cell_Request?: ICell[];
 }
 
-export interface IgetChildCellsByStemCellId {
-    "request type": string;
-    error:boolean;
-    message?: any;
-    cells_Request?: ICell[];
-};
-
 export interface IgetEcoSystemByStemCellId {
     request_type: string;
     error:boolean;

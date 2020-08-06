@@ -56,7 +56,6 @@ export const MindMapBuilder: React.FC = () => {
 ---------------------------------------------------------------------------------------------------- */
     // Function, generate the ecosystem of cells of the selected mind map during the first connection.
     const getEcosystemToFirstConnection =  () => {
-        console.log(refresh)
         try {
             const socket = io.connect(ENDPOINT);
                 socket.emit('get ecosystem', mainStemCellId, true , (data:any) => {
@@ -88,7 +87,6 @@ export const MindMapBuilder: React.FC = () => {
                     socket.emit('get ecosystem', stemCell[0]?._id, false ,  (data:any) => {
                         setStemCell(data.stemCellOfEcosystem.cell_Request);
                         setCells(data.cellsOfEcosystem.cells_Request);
-                        console.log(data.stemCellOfEcosystem)
                     });
             } catch (error) {
                 console.log({
