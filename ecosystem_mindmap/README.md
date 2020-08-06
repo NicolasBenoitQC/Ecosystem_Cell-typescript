@@ -1,3 +1,21 @@
+//---------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------
+
+Current version : 
+
+This project is a tool for building a cartography of a set of elements (set of elements = virtual ecosystem).
+An ecosystem is made up of a mother cell interconnected with its children.
+Each child cell can itself become a mother cell which will also be accompanied by its child cells.
+
+Futur version :
+
+Generate a mapping of a complex ecosystem in 3D, which will allow the development of a dense network of relationships, dependencies and information exchanges.
+
+//---------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
