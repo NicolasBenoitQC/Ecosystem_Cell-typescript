@@ -10,4 +10,6 @@
  - Drag and drop.
     - delete cell.
     - change position of the cell.
-    - change origin cell (stem cell)
+    - change origin cell (stem cell).
+
+

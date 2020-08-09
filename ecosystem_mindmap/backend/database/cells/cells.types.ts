@@ -53,6 +53,13 @@ export interface IUpdatePropsCellResp {
     update_Cell?: ICell;
 };
 
+export interface IDeleteAllChildrenCellsOfTheCellDeleted {
+    request_type: string;
+    error:boolean;
+    message?: string;
+    child_cell_deleted?: ICell;
+}
+
  export interface ICellDocument extends ICellSchema ,Document {
 }; 
 
@@ -89,6 +96,8 @@ export interface IGetAllIdOfChildCellsResp {
     message?: string;
     parents_tree?: IParentsTreeOfTheCell[];
 };
+
+
 
 export interface IParentsTreeOfTheCellDocument extends IParentsTreeOfTheCellSchema ,Document {
 };

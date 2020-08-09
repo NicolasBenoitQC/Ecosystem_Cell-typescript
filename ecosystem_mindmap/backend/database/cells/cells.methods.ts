@@ -11,10 +11,10 @@ import { CellModel, ParentsTreeOfTheCellModel } from './cells.model';
 -------------------------- helper --------------------------
 ------------------------------------------------------------ */
 
-/* 
+/*
     Create new cell in database.
     Model : CellModel.
- */
+UT_done. */
 export async function newCell ( 
     title: string, description: string, position: number,
     idStemCell: string,stemCell: boolean ): Promise<INewCell> {
@@ -41,56 +41,9 @@ export async function newCell (
 };
 
 /* 
-    Get the cell(s) with the idStemCell property specified as a parameter of this function.
-    { idStemCell: id} 
-    Model : CellModel.
- */
-export async function getCellsByPropsIdStemCell (id: string): Promise<IGetCells> {
-    
-    const requestType = 'Get cell(s) by idStemCell.';
-    
-    const cells_Request = await CellModel.find({idStemCell: id})
-        .then(cells_Response => {return  {
-                request_type: requestType,
-                error: false, 
-                cells_Request: cells_Response,
-            }})
-        .catch(error => {return {
-                request_type: requestType,
-                error: true, 
-                message: error
-            }})
-    return cells_Request;
-};
-
-/* 
-    Get the cell with the _id property specified as a parameter of this function.
-    { _id: id} 
-    Model : CellModel.
-    Function also used in socket.io communication.
- */
-export async function getCellByProps_Id (id: string): Promise<IGetCellByPropsId> {
-    
-    const requestType = 'Get cell by _id';
-
-    const cells_Request = await CellModel.find({_id: id})
-        .then(cells_Response => {return {
-                request_type: requestType,
-                error: false,
-                cell_Request: cells_Response
-            }})
-        .catch(error => {return {
-                request_type: requestType,
-                error: true, 
-                message: error
-            }})
-    return cells_Request;
-}
-
-/* 
     Create parent tree of the cell in database.
     Model : ParentsTreeOfTheCellModel.
- */
+UT_done. */
 export async function newParentsTreeOfTheCell (parentsArray: string[], cell_id: string): Promise<INewParentsTreeOfTheCellResp> {
     
     const requestType = 'create new parents tree of the cell.'; 
@@ -115,6 +68,52 @@ export async function newParentsTreeOfTheCell (parentsArray: string[], cell_id: 
     return parentsTreeOfTheCellCreated;
 };
 
+/* 
+    Get the cell(s) by idStemCell property specified as a parameter of this function.
+    { idStemCell: id} 
+    Model : CellModel.
+UT_done. */
+export async function getCellsByPropsIdStemCell (id: string): Promise<IGetCells> {
+    
+    const requestType = 'Get cell(s) by idStemCell.';
+    
+    const cells_Request = await CellModel.find({idStemCell: id})
+        .then(cells_Response => {return  {
+                request_type: requestType,
+                error: false, 
+                cells_Request: cells_Response,
+            }})
+        .catch(error => {return {
+                request_type: requestType,
+                error: true, 
+                message: error
+            }})
+    return cells_Request;
+};
+
+/* 
+    Get the cell with the _id property specified as a parameter of this function.
+    { _id: id} 
+    Model : CellModel.
+    Function also used in socket.io communication.
+UT_done. */
+export async function getCellByProps_Id (id: string): Promise<IGetCellByPropsId> {
+    
+    const requestType = 'Get cell by _id';
+
+    const cells_Request = await CellModel.find({_id: id})
+        .then(cells_Response => {return {
+                request_type: requestType,
+                error: false,
+                cell_Request: cells_Response
+            }})
+        .catch(error => {return {
+                request_type: requestType,
+                error: true, 
+                message: error
+            }})
+    return cells_Request;
+}
 
 /* 
     Get all document which contains the id in the parensIdList property.
@@ -122,7 +121,7 @@ export async function newParentsTreeOfTheCell (parentsArray: string[], cell_id: 
     the id, the level of the cell id passed as a parameter.
     {parentsIdList: id}
     Model : ParentsTreeOfTheCellModel.
- */
+UT_done. */
 export async function getAllIdOfChildCells (id: string): Promise<IGetAllIdOfChildCellsResp> {
     
     const requestType = 'get all id of childs Cells.'
@@ -142,30 +141,54 @@ export async function getAllIdOfChildCells (id: string): Promise<IGetAllIdOfChil
 };
 
 /* 
-    Delete all children of the cell deleted of the database.
-    Model : ParentsTreeOfTheCellModel & CellModel.
- */
-export async function deleteChildOfTheCell (cellId: string) {
-
-    const childsIdList = await getAllIdOfChildCells(cellId);
+    Delete all children cells of the cell deleted.
+    Model : CellModel.
+UT_done. */
+export async function deleteAllChildrenCellsOfTheCellDeleted (chidrenIdList: IGetAllIdOfChildCellsResp) {
     
-    childsIdList.parents_tree?.map(async currentId => {
-        
-        await ParentsTreeOfTheCellModel.findByIdAndDelete(currentId._id)
-            .catch(error => { console.log({
-                request_type: `Delete children ${currentId._id} of model ParentsTreeOfTheCellModel`,
-                error: true,
-                message: error,
-            })});
-
+    chidrenIdList.parents_tree.map(async currentId => {
         await CellModel.findByIdAndDelete(currentId.cellId)
-            .catch(error => { console.log({
-                request_type: `Delete children ${currentId._id} of model CellModel`,
-                error: true,
-                message: error,
-            })});
+            .then(deleteChildCell => {
+                return {
+                    request_type: `Deleted child cell ${currentId.cellId} of model CellModel.`,
+                    error: false,
+                    child_cell_deleted: deleteChildCell,
+                }
+            })
+            .catch(error => {
+                return {
+                    request_type: `Deleted child cell ${currentId.cellId} of model CellModel.`,
+                    error: true,
+                    message: error,
+                }
+            });
     });
 };
+
+/* 
+    Delete all parents trees of the children cells of the cell deleted.
+    Model : ParentsTreeOfTheCellModel.
+UT_done. */
+export async function deleteAllParentsTreesOfTheCellDeleted (childrenIdList: IGetAllIdOfChildCellsResp) {
+    childrenIdList.parents_tree.map(async currentId => {
+        await ParentsTreeOfTheCellModel.findByIdAndDelete(currentId._id)
+            .then(deleteParentTree => {
+                return {
+                    request_type: `Delete parent tree ${currentId._id} of model ParentsTreeOfTheCellModel.`,
+                    error: false,
+                    parent_tree_deleted: deleteParentTree,
+                }
+            })
+            .catch(error => {
+                return {
+                    request_type: `Delete parent tree ${currentId._id} of model ParentsTreeOfTheCellModel.`,
+                    error: true,
+                    message: error,
+                }
+            });
+    });
+};
+
 /* __________________________________________________________ */
 
 
@@ -330,5 +353,7 @@ export async function deleteCellAndAllChilds (cell_id: string, stemCell_id: stri
     const parentTreeToBeDelete = await ParentsTreeOfTheCellModel.find({cellId:cellToBeDelete.cell_Request[0]._id});
     await ParentsTreeOfTheCellModel.findByIdAndDelete(parentTreeToBeDelete[0]._id);
     
-    await deleteChildOfTheCell(cell_id);
+    const childrenIdList = await getAllIdOfChildCells(cell_id);
+    await deleteAllChildrenCellsOfTheCellDeleted(childrenIdList);
+    await deleteAllParentsTreesOfTheCellDeleted(childrenIdList);
 }

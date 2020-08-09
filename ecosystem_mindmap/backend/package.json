@@ -8,7 +8,7 @@
     "dev": "nodemon ./dist/server.js",
     "build": "tsc",
     "script": "cd scripts && ts-node",
-    "test": "mocha ./dist/test/*.test.js"
+    "test": "mocha ./dist/*/*.test.js"
   },
   "author": "",
   "license": "ISC",

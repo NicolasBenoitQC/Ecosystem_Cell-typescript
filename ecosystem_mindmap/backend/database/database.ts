@@ -4,7 +4,7 @@ import { CellModel, TestCellModel } from './cells/cells.model';
 let database: Mongoose.Connection;
 
 // fonction to connect the database.
-export const Connect = () => {
+export const Connect = async () => {
     
     // set uri to connect to mongoDB
     const uri = 
@@ -16,7 +16,7 @@ export const Connect = () => {
     }
 
     // connect to the MongoDB.
-    Mongoose.connect(uri, {
+    await Mongoose.connect(uri, {
         useNewUrlParser: true,
         useFindAndModify: false,
         useUnifiedTopology: true,
@@ -37,19 +37,18 @@ export const Connect = () => {
     });
     
     return {
-        CellModel,
-        TestCellModel,
+        CellModel
     }
 };
 
 // fonction to disconnect the database.
-export const disconnect = () => {
+export const disconnect = async () => {
 
     // if database is not connect do nothing.
     if (!database) {
         return;
     };
-    Mongoose.disconnect();
+    await Mongoose.disconnect();
 
 }
 
