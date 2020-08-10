@@ -5,7 +5,7 @@ import { ParentsTreeOfTheCellModel } from '../database/cells/cells.model'
 
 (async () => {
 
-  Connect()
+  //Connect()
 
   const add = async(array:string[], cell_Id: string) => {  
     

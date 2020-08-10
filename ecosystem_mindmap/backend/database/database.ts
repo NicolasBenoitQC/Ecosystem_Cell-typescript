@@ -1,14 +1,21 @@
 import  Mongoose from 'mongoose';
-import { CellModel, TestCellModel } from './cells/cells.model';
+import { CellModel } from './cells/cells.model';
 
 let database: Mongoose.Connection;
 
 // fonction to connect the database.
-export const Connect = async () => {
+export const Connect = async (databaseName:string) => {
     
     // set uri to connect to mongoDB
-    const uri = 
-    'mongodb+srv://Nicolas:Nicolas@cluster0-rcppa.mongodb.net/CellsMindmap?retryWrites=true&w=majority';
+    let uri:string;
+    if(databaseName === 'CellsMindMap') {
+        uri = 
+    'mongodb+srv://Nicolas:Nicolas@cluster0-rcppa.mongodb.net/CellsMindMap?retryWrites=true&w=majority';
+    } else if (databaseName === 'UnitTestCellsMindMap') {
+        uri = 
+    'mongodb+srv://Nicolas:Nicolas@cluster0-rcppa.mongodb.net/UnitTestCellsMindMap?retryWrites=true&w=majority';
+    }
+         
     
     // if always connect to the database, do nothing.
     if (database) {

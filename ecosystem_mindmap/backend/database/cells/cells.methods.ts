@@ -8,13 +8,13 @@ import { INewCell, IGetCells, ICell, IGetCellByPropsId,IgetEcoSystemByStemCellId
 import { CellModel, ParentsTreeOfTheCellModel } from './cells.model';
 
 /* ------------------------------------------------------------
--------------------------- helper --------------------------
+------------------ helpers functions --------------------------
 ------------------------------------------------------------ */
 
 /*
     Create new cell in database.
     Model : CellModel.
-UT_done. */
+unit test _ done. */
 export async function newCell ( 
     title: string, description: string, position: number,
     idStemCell: string,stemCell: boolean ): Promise<INewCell> {
@@ -43,7 +43,7 @@ export async function newCell (
 /* 
     Create parent tree of the cell in database.
     Model : ParentsTreeOfTheCellModel.
-UT_done. */
+unit test _ done. */
 export async function newParentsTreeOfTheCell (parentsArray: string[], cell_id: string): Promise<INewParentsTreeOfTheCellResp> {
     
     const requestType = 'create new parents tree of the cell.'; 
@@ -72,7 +72,7 @@ export async function newParentsTreeOfTheCell (parentsArray: string[], cell_id: 
     Get the cell(s) by idStemCell property specified as a parameter of this function.
     { idStemCell: id} 
     Model : CellModel.
-UT_done. */
+unit test _ done. */
 export async function getCellsByPropsIdStemCell (id: string): Promise<IGetCells> {
     
     const requestType = 'Get cell(s) by idStemCell.';
@@ -96,7 +96,7 @@ export async function getCellsByPropsIdStemCell (id: string): Promise<IGetCells>
     { _id: id} 
     Model : CellModel.
     Function also used in socket.io communication.
-UT_done. */
+unit test _ done. */
 export async function getCellByProps_Id (id: string): Promise<IGetCellByPropsId> {
     
     const requestType = 'Get cell by _id';
@@ -121,7 +121,7 @@ export async function getCellByProps_Id (id: string): Promise<IGetCellByPropsId>
     the id, the level of the cell id passed as a parameter.
     {parentsIdList: id}
     Model : ParentsTreeOfTheCellModel.
-UT_done. */
+unit test _ done. */
 export async function getAllIdOfChildCells (id: string): Promise<IGetAllIdOfChildCellsResp> {
     
     const requestType = 'get all id of childs Cells.'
@@ -143,7 +143,7 @@ export async function getAllIdOfChildCells (id: string): Promise<IGetAllIdOfChil
 /* 
     Delete all children cells of the cell deleted.
     Model : CellModel.
-UT_done. */
+unit test _ done. */
 export async function deleteAllChildrenCellsOfTheCellDeleted (chidrenIdList: IGetAllIdOfChildCellsResp) {
     
     chidrenIdList.parents_tree.map(async currentId => {
@@ -168,7 +168,7 @@ export async function deleteAllChildrenCellsOfTheCellDeleted (chidrenIdList: IGe
 /* 
     Delete all parents trees of the children cells of the cell deleted.
     Model : ParentsTreeOfTheCellModel.
-UT_done. */
+unit test _ done. */
 export async function deleteAllParentsTreesOfTheCellDeleted (childrenIdList: IGetAllIdOfChildCellsResp) {
     childrenIdList.parents_tree.map(async currentId => {
         await ParentsTreeOfTheCellModel.findByIdAndDelete(currentId._id)

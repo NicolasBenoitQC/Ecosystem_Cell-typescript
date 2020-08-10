@@ -2,7 +2,7 @@ import  {CellModel}  from '../database/cells/cells.model';
 import { Connect, disconnect } from '../database/database';
 
 (async () => {
-    Connect();  
+    //Connect();  
     
     const testCells = [
       { title: "Stem Cell", description: "This", position: 0, idMindMap: 'af46d28s', idStemCell: 'na', stemCell: true},
