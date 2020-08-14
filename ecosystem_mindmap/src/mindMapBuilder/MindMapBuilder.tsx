@@ -55,7 +55,7 @@ export const MindMapBuilder: React.FC = () => {
     ----- Function ---------------------------------------------------------------------------------     
 ---------------------------------------------------------------------------------------------------- */
     // Function, generate the ecosystem of cells of the selected mind map during the first connection.
-    const getEcosystemToFirstConnection =  () => {
+    const getEcosystemToFirstConnection =  async () => {
         try {
             const socket = io.connect(ENDPOINT);
                 socket.emit('get ecosystem', mainStemCellId, true , (data:any) => {
@@ -80,7 +80,7 @@ export const MindMapBuilder: React.FC = () => {
     };
 
     // Function, refresh the ecosystem of cells to actualize the mind map.
-    const getEcosystemToActualize = () => {
+    const getEcosystemToActualize = async () => {
         if(refresh > 1) {
             try {
                 const socket = io.connect(ENDPOINT);
@@ -100,38 +100,39 @@ export const MindMapBuilder: React.FC = () => {
     };
 
     // Function, modify the variable 'refresh' to active the useEffect and refresh the cells.
-    const refreshEcosystem =  ():void => {
+    const refreshEcosystem =  async () => {
         setRefresh(refresh+1);
     };
 
     // Function, moves the clicked cell to the center of the mind map. (cell becomes like a stem cell.)
-    const doubleClick =  (cell:StemCell):void => {
+    const doubleClick =  async (cell:StemCell) => {
         setStemCell([cell]);
-        addStemCellToParentTree(cell._id);
-        refreshEcosystem();
+        await addStemCellToParentTree(cell._id);
+        await refreshEcosystem();
     };
 
     // Function, return to the parent stem cell and refresh the mind map.
-    const returnPreviousStemCell =  ():void => {
+    const returnPreviousStemCell = async  () => {
         if (stemCell[0].idStemCell === mindMap[0]._id) {
-            return;
+            await getEcosystemToFirstConnection();
+            await refreshEcosystem();
         } else {
             const socket = io.connect(ENDPOINT);
-            socket.emit('get cell by _id', stemCell[0].idStemCell,  (data:any) => {
+            socket.emit('get cell by _id', stemCell[0].idStemCell,  async (data:any) => {
                 setStemCell(data.cell_Request);
-                removeStemCellToParentTree();
-                refreshEcosystem();
+                await removeStemCellToParentTree();
+                await refreshEcosystem();
             }) 
         }
     }
 
     // Function, when function double click is activate the cell id is save in the variable 'parentTree' 
-    const addStemCellToParentTree =  (id:string):void => {
+    const addStemCellToParentTree = async (id:string) => {
         parentTree.push(id);      
     };
 
     // Function, when button 'Previous stem cell' is activate the stem cell id is remove in the variable 'parentTree'.
-    const removeStemCellToParentTree =  ():void => {
+    const removeStemCellToParentTree =  async () => {
         parentTree.pop();
     };
 

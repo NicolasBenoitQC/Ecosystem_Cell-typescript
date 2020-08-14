@@ -92,7 +92,8 @@ export const StemCell: React.FC<StemCellProps> = ({
         });    
     };
 
-    // Function, rempves the stem cell and all children associated with that stem cell.
+    // Function, removes the stem cell and all children associated with that stem cell.
+    // if the stem cell is the main stem cell all is deleled and the main stem cell default is created.
     const deleteCell = async (event:any) => {
         event.preventDefault();
         const socket = io.connect(ENDPOINT);

@@ -5,7 +5,7 @@ import socketio from 'socket.io';
 import { getEcoSystemByStemCellId, getCellByProps_Id, createDefaultStemCell,
         addCell, updatePropsCellById, deleteCellAndAllChilds,
          } from './database/cells/cells.methods';
-import { ICell} from './database/cells/cells.types';
+import { ICell, ICellSchema} from './database/cells/cells.types';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -50,7 +50,7 @@ io.on('connection', async (socket) => {
     );
 
     socket.on('add cell', 
-        async (cell:ICell, parentTree: string[], fn) => {
+        async (cell:ICellSchema, parentTree: string[], fn) => {
             const newCell = await addCell(cell, parentTree);
             await fn(newCell);
 
@@ -69,13 +69,12 @@ io.on('connection', async (socket) => {
 
     socket.on('delete cell and all child', 
         async (cell: ICell, fn) => {
-            const deleteCells = await deleteCellAndAllChilds(cell._id, cell.idStemCell);
+            const deleteCells = await deleteCellAndAllChilds(cell);
             fn(deleteCells);
 
             //console.log(deleteCells)
         }
     );
-
 });
 
 server.listen(port, () => {
