@@ -14,7 +14,6 @@ import {getCellsByPropsIdStemCell, newCell,
 import { ICell } from '../database/cells/cells.types';
 
 const _id_MindMap = '5f2ebb1c62cc290fb806c999';
-let _id_cell2:string;
 let parentsArray:string[];
 
 let stemCell: ICell = {
@@ -103,7 +102,7 @@ describe('Helpers methods of communication with the database.', async () => {
                                             cell2.stemCell
         );
 
-        _id_cell2 = `${createCell.cell_created._id}`;
+        cell2 = createCell.cell_created;
 
         await newParentsTreeOfTheCell( [`${stemCell._id}`] , `${createCell.cell_created._id}`);
 
