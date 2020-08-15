@@ -38,11 +38,19 @@ export interface IGetCellByPropsId {
     cell_Request?: ICell[];
 }
 
+export interface IgetEcoSystemByMindMapId {
+    request_type: string;
+    error:boolean;
+    message?: any;
+    stemCellOfEcosystem?: IGetCells
+    cellsOfEcosystem?: IGetCells;
+};
+
 export interface IgetEcoSystemByStemCellId {
     request_type: string;
     error:boolean;
     message?: any;
-    stemCellOfEcosystem?: IGetCells;
+    stemCellOfEcosystem?: IGetCellByPropsId;
     cellsOfEcosystem?: IGetCells;
 };
 
@@ -72,15 +80,15 @@ ______________________________________________________________ */
 
 export interface IParentsTreeOfTheCellSchema {
     cellId: string;
-    levelCell: number;
-    listPatentId: string[];
+    cellLevel: number;
+    parentsIdList: string[];
 };
 
 export interface IParentsTreeOfTheCell {
     _id: string;
     cellId: string;
-    levelCell: number;
-    listPatentId: string[];
+    cellLevel: number;
+    parentsIdList: string[];
 };
 
 export interface INewParentsTreeOfTheCellResp {

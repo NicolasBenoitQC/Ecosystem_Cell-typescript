@@ -2,6 +2,9 @@
 import { INewCell, IGetCells,
         INewParentsTreeOfTheCellResp, 
         IGetAllIdOfChildCellsResp,
+        IParentsTreeOfTheCellSchema,
+        IParentsTreeOfTheCell,
+        IParentsTreeOfTheCellDocument,
  } from './cells.types';
 
 // Local file.
@@ -44,7 +47,7 @@ export async function newParentsTreeOfTheCell (parentsArray: string[], cell_id: 
 
 const requestType = 'create new parents tree of the cell.'; 
 
-const newParentsTreeOfTheCell = new ParentsTreeOfTheCellModel({
+const newParentsTreeOfTheCell: IParentsTreeOfTheCellDocument  = new ParentsTreeOfTheCellModel({
     cellId: cell_id,
     cellLevel: parentsArray.length,
     parentsIdList: parentsArray,

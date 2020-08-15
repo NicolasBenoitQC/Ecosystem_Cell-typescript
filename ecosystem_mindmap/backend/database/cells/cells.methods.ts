@@ -40,7 +40,7 @@ export async function getCellByProps_Id (id: string): Promise<IGetCellByPropsId>
         two possibility :
             - the first one, to define the first level of the ecosystem, the origine is the mindmap id.
             - the second, to define the next level of the ecosystem, the origine is the id an stem cell.  
- */
+unit test _ done. */
 export async function getEcoSystemByStemCellId (stemCell_id: string, parentIsMindMap: boolean): Promise<IgetEcoSystemByStemCellId> {
     
     const requestType = 'Get ecosystem, to define stem cell & cells.';
@@ -162,7 +162,7 @@ export async function updatePropsCellById (cellUpdated:ICell):  Promise<IUpdateP
 /* 
     Delete cell and delete all children of that cell.
     The position of the cell(s) with the same stem cell are updated.
- */
+unit test _ done. */
 export async function deleteCellAndAllChilds (cellToBeDelete: ICell) {
 
     // get all cells whit the same stem cell.
