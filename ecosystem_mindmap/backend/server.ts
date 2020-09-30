@@ -75,8 +75,15 @@ io.on('connection', async (socket) => {
             //console.log(deleteCells)
         }
     );
+
+    socket.on('test',
+        async () => {
+            Connect('UnitTestCellsMindMap');
+            console.log('test database')
+        }
+    )
 });
 
 server.listen(port, () => {
-    console.log(`Server started on localhost:${port}`);
+    console.log(`Server started on localhost: ${port}`);
 });

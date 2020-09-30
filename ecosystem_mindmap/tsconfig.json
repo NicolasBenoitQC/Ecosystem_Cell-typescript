@@ -19,7 +19,23 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": [
-    "src", "backend/helloWorld.ts"
-  ]
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "src/setupTests.ts",
+    "server",
+    ".cache",
+    "dist",
+    "jest.config.js",
+    "parcelDev.js",
+    "parcelProd.js",
+    "__tests__",
+    "coverage",
+    "@types"
+]
 }

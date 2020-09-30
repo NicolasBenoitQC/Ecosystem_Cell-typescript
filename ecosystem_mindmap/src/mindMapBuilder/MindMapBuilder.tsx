@@ -136,6 +136,14 @@ export const MindMapBuilder: React.FC = () => {
         parentTree.pop();
     };
 
+    // test database
+    const testDatabase = async () => {
+        const socket = io.connect(ENDPOINT);
+        socket.emit('test', () => {
+            console.log('test data base.')
+        })
+    }
+
 /* ---------------------------------------------------------------------------------------------------
     ----- Elements ------------------------------------------------------------------------------------     
 ------------------------------------------------------------------------------------------------------ */
@@ -215,6 +223,9 @@ export const MindMapBuilder: React.FC = () => {
             <div>
                 <button onClick={returnPreviousStemCell}>
                     Previous stem cell
+                </button>
+                <button onClick={testDatabase}>
+                    TEST
                 </button>
             </div>
         </div>

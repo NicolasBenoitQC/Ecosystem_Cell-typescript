@@ -6,9 +6,7 @@ import { MindMapBuilder } from './mindMapBuilder/MindMapBuilder';
 const  App: React.FC = () => {
   return (
     <Router>
-      <div className='container' >
-        <Route path='/' exact component={MindMapBuilder} />
-      </div>
+      <Route path='/' exact component={MindMapBuilder} />
     </Router>
   );
 }

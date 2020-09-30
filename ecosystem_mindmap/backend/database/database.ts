@@ -9,11 +9,12 @@ export const Connect = async (databaseName:string) => {
     // set uri to connect to mongoDB
     let uri:string;
     if(databaseName === 'CellsMindMap') {
-        uri = 
+        uri =
     'mongodb+srv://Nicolas:Nicolas@cluster0-rcppa.mongodb.net/CellsMindMap?retryWrites=true&w=majority';
     } else if (databaseName === 'UnitTestCellsMindMap') {
         uri = 
     'mongodb+srv://Nicolas:Nicolas@cluster0-rcppa.mongodb.net/UnitTestCellsMindMap?retryWrites=true&w=majority';
+    
     }
          
     
@@ -42,6 +43,8 @@ export const Connect = async (databaseName:string) => {
     database.on('error', () => {
         console.log('Error connecting to database');
     });
+    
+    console.log(uri)
     
     return {
         CellModel
